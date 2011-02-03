@@ -672,12 +672,19 @@ CustomerDeviceService[Utility->customerDevice] {
 	   these files, and I therefore see some advantage in scripting these.  The parser rules are written, I just need
 	   to handle these in an intelligent way.
 */
+		VirulentSufiDto[Utility->bizarre] {
+            long CustomerId
+            string FirstName
+            string LastName
+		}
 
         WingDingsDto[Utility->garbage] {
             long CustomerId
             string FirstName
             string LastName
-        }
+			WingDingsDto BackReference
+			VirulentSufiDto StrangerThanFiction
+		}
 
         WingDingsService[Utility->garbage] {
             void ShowWingDings()

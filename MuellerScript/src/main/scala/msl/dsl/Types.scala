@@ -7,11 +7,18 @@ object Types {
     def name: String
   }
 
+  trait Type {
+    self: Statement =>
+    def name: String
+  }
+
   case class Entity(name: String, entityElements: List[Definition]) extends Statement
 
-  case class Dao(name: String, definitions: List[Definition]) extends Statement
+  case class Dao(name: String, definitions: List[Definition]) extends Statement with Type
 
-  case class Dto(name: String, flexPackage: Option[FlexPackage], definitions: List[Definition]) extends Statement
+  case class Dto(name: String, flexPackage: Option[FlexPackage], definitions: List[Definition]) extends Statement with Type
+
+  case class Primitive(name: String) extends Statement with Type
 
   case class Mapping(name: String) extends Statement
 
@@ -29,20 +36,21 @@ object Types {
 
   case class FlexPackage(name: String, namespace: NamespaceType.Value)
 
-  case class DefinitionType(variableType: String, genericType: Option[String]) {
+  case class DefinitionType(variableType: Type, genericType: Option[String]) {
     def forFlex: String = (variableType, genericType) match {
         case (_, Some(value)) => "ArrayCollection"
-        case ("int", None) => "int"
-        case ("float", None) => "Number"
-        case ("long", None) => "Number"
-        case ("string", None) => "String"
-        case ("DateTime", None) => "Date"
+        case (Primitive("int"), None) => "int"
+        case (Primitive("float"), None) => "Number"
+        case (Primitive("long"), None) => "Number"
+        case (Primitive("string"), None) => "String"
+        case (Primitive("DateTime"), None) => "Date"
+        case (Dto(name, _, _), None) => name
         case _ => "Object"
       }
 
-    def forCSharp = genericType match {
-      case Some(generic) => generic + "<" + variableType + ">"
-      case _ => variableType
+    def forCSharp: String = genericType match {
+      case Some(generic) => generic + "<" + variableType.name + ">"
+      case _ => variableType.name
     }
   }
 

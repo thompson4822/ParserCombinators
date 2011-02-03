@@ -12,7 +12,7 @@ import msl.dsl.Types.{FlexPackage, Method, Command}
  * To change this template use File | Settings | File Templates.
  */
 
-class CommandRequestGen(method: Method, flexPackage: FlexPackage) extends Generator {
+class CommandRequestGen(method: Method, flexPackage: FlexPackage) extends Generator with CommonFlex {
   val namespace = List(Context.flexPackage(flexPackage), "events").mkString(".")
 
   lazy val filepath = List(Context.flexPath(flexPackage), "events").mkString("/")
@@ -22,26 +22,27 @@ class CommandRequestGen(method: Method, flexPackage: FlexPackage) extends Genera
   val parameters = method.parameters
 
   val parameterFields: String =
-    parameters.map(d => "    private var _" + d.name + ":" + d.definitionType.forFlex + ";").mkString("\n")
+    parameters.map(d => "        private var _" + d.name + ":" + d.definitionType.forFlex + ";").mkString("\n")
 
   val parameterGetters: String =
-    parameters.map(d => "    public function get " + d.name + "():" + d.definitionType.forFlex + "{ return _" + d.name + "; }").mkString("\n")
+    parameters.map(d => "        public function get " + d.name + "():" + d.definitionType.forFlex + "{ return _" + d.name + "; }").mkString("\n")
 
   val constructorParameters: String = parameters.map(d => d.name + "Param:" + d.definitionType.forFlex).mkString(", ")
 
-  val constructorBody: String = parameters.map(d => "      _" + d.name + " = " + d.name + "Param;").mkString("\n")
+  val constructorBody: String = parameters.map(d => "            _" + d.name + " = " + d.name + "Param;").mkString("\n")
 
   override def toString = """
 package """ + namespace + """
 {
-  public class """ + method.name + """Request
-  {
-""" + parameterFields + "\n\n" + parameterGetters + "\n" + """
-    public function """ + method.name + """Request(""" + constructorParameters + """)
+""" + dtoImports(method.parameters) + """
+    public class """ + method.name + """Request
     {
+""" + parameterFields + "\n\n" + parameterGetters + "\n" + """
+        public function """ + method.name + """Request(""" + constructorParameters + """)
+        {
 """ + constructorBody + """
+        }
     }
-  }
 }
 """
 }

@@ -36,7 +36,7 @@ using Mueller.Han.Utility;
 
 namespace """ + namespace + """
 {
-    public interface I""" + dao.name + " : IGenericDao<" + entityName + """, long>
+    public partial interface I""" + dao.name + " : IGenericDao<" + entityName + """, long>
     {
     }
 }    """

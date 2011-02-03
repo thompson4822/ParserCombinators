@@ -48,14 +48,14 @@ class MslParser extends RegexParsers {
   lazy val dao = daoIdent ~ daoDtoBody ^^ {
     case name ~ defs =>
     val result = Dao(name, defs)
-    addDao(result)
+    elements.update(name, result)
     result
   }
 
   lazy val dto = dtoIdent ~ flexPackage ~ daoDtoBody ^^ {
     case name ~ packageDef ~ defs =>
     val result = Dto(name, Some(packageDef), defs)
-    addDto(result)
+    elements.update(name, result)
     result
   }
 
@@ -121,19 +121,33 @@ class MslParser extends RegexParsers {
     genericType ^^ {
       case genericType(generic, genType) =>
         genType match {
-          case daoIdent(name) => addDaoReference(new Dao(name, Nil))
-          case dtoIdent(name) => addDtoReference(new Dto(name, None, Nil))
-          case _ => println(genType + " was not a DAO/DTO")
+          case daoIdent(name) =>
+            val myDao = new Dao(name, Nil)
+            addDaoReference(myDao)
+            DefinitionType(myDao, Some(generic))
+          case dtoIdent(name) =>
+            val myDto = new Dto(name, None, Nil)
+            addDtoReference(myDto)
+            DefinitionType(myDto, Some(generic))
+          case _ => DefinitionType(Primitive(genType), Some(generic))
+
         }
-        DefinitionType(genType, Some(generic))
     } |
     basicType ^^ { DefinitionType(_, None) }
 
   lazy val basicType =
-    "int" | "long" | "string" | "double" | "char" | "bool" | "DateTime" |
-    daoIdent ^^ { case daoIdent(name) => addDaoReference(new Dao(name, Nil)); name } |
-    dtoIdent ^^ { case dtoIdent(name) => addDtoReference(new Dto(name, None, Nil)); name } |
-    ident
+    ("int" | "long" | "string" | "double" | "char" | "bool" | "DateTime") ^^ { case s => Primitive(s) } |
+    daoIdent ^^ { case daoIdent(name) =>
+      val myDao = new Dao(name, Nil)
+      addDaoReference(myDao)
+      myDao
+    } |
+    dtoIdent ^^ { case dtoIdent(name) =>
+      val myDto = new Dto(name, None, Nil)
+      addDtoReference(myDto)
+      myDto
+    } |
+    ident ^^ { case s => Primitive(s) }
 
   def addDaoReference(d: Dao) = elements.getOrElseUpdate(d.name, d)
 

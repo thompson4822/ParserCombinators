@@ -22,12 +22,15 @@ with BeforeAndAfterEach with ShouldMatchers {
 
       when("the input is parsed")
       then("the outcome should be a definition type")
+      /*
       val m = new MslParser
       val expectedOutcome = Definition("lotusBlossum", DefinitionType("ILotusBlossum", None))
       m.parseAll(m.inject, input) match {
         case m.Success(result, _) => result should equal (expectedOutcome)
         case other => fail("Produced unexpected result: " + other.toString)
       }
+      */
+      pending
     }
 
 

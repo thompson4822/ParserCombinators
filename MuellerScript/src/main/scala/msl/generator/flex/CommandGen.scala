@@ -22,6 +22,8 @@ class CommandGen(serviceName: String, method: Method, flexPackage: FlexPackage) 
 
   lazy val filename = method.name + "Command.as"
 
+  private def requestArguments = method.parameters.map("request." + _.name).mkString(", ")
+
   private def responseMethod = if(method.returnType.forCSharp != "void")
     """
         public function result(response:""" + method.returnType.forFlex + """):void
@@ -68,7 +70,7 @@ package """ + namespace + """
         public function execute(request:""" + method.name + """Request):AsyncToken
         {
             LOG.debug(""" + "\"" + method.name + """Command now initiating the service call """ + method.name + """ on the service """ + serviceName.unCapitalize + "\"" + """);
-            return service.""" + method.name + """Command (request.customerId);
+            return service.""" + method.name + """Command(""" + requestArguments + """);
         }
 """ + responseMethod + """
 	}

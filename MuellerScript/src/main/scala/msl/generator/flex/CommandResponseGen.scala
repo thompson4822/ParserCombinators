@@ -12,7 +12,7 @@ import msl.dsl.Types.{FlexPackage, Method, Command}
  * To change this template use File | Settings | File Templates.
  */
 
-class CommandResponseGen(method: Method, flexPackage: FlexPackage) extends Generator {
+class CommandResponseGen(method: Method, flexPackage: FlexPackage) extends Generator with CommonFlex {
   val namespace = List(Context.flexPackage(flexPackage), "events").mkString(".")
 
   lazy val filepath = List(Context.flexPath(flexPackage), "events").mkString("/")
@@ -37,20 +37,21 @@ class CommandResponseGen(method: Method, flexPackage: FlexPackage) extends Gener
 
   val constructorBody: String =
     if(method.returnType.forCSharp != "void")
-      "      _result = resultParam;\n"
+      "          _result = resultParam;\n"
     else ""
 
   override def toString = """
 package """ + namespace + """
 {
-  public class """ + method.name + """Response
-  {
-""" + parameterFields + "\n" + parameterGetters + """
-    public function """ + method.name + """Response(""" + constructorParameters + """)
+""" + dtoImports(method.parameters) + """
+    public class """ + method.name + """Response
     {
+""" + parameterFields + "\n" + parameterGetters + """
+        public function """ + method.name + """Response(""" + constructorParameters + """)
+        {
 """ + constructorBody + """
+        }
     }
-  }
 }
 """
 }

@@ -38,7 +38,7 @@ using Mueller.Han.Utility;
 
 namespace """ + namespace + """
 {
-    public class """ + dao.name + " : GenericDao<" + entityName + ", long>, I" + dao.name + """
+    public partial class """ + dao.name + " : GenericDao<" + entityName + ", long>, I" + dao.name + """
     {
     }
 }    """
