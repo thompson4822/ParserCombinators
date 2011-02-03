@@ -311,7 +311,7 @@ CustomerDeviceFactory {
 	give some information to MSL about Flex, as shown:
 */
 
-flex[Utility]=customerDevice
+//flex[Utility]=customerDevice
 
 /*
     There are some things to note in this declaration:
@@ -333,7 +333,7 @@ flex[Utility]=customerDevice
 */
 
 
-CustomerDeviceService[Utility] { }
+CustomerDeviceService[Utility->customerDevice] { }
 
 /*
 	Services
@@ -357,7 +357,7 @@ CustomerDeviceService[Utility] { }
 */
 
 /*
-CustomerDeviceService[Utility] {
+CustomerDeviceService[Utility->customerDevice] {
     int GetDeviceType(long deviceId)
     void SetDeviceType(long deviceId, int deviceType)
 }
@@ -673,12 +673,19 @@ CustomerDeviceService[Utility] {
 	   to handle these in an intelligent way.
 */
 
-        WingDingsDto {
+        WingDingsDto[Utility->garbage] {
             long CustomerId
             string FirstName
             string LastName
         }
 
+        WingDingsService[Utility->garbage] {
+            void ShowWingDings()
+			int WingDingsCount()
+			void AddWingDing(WingDingsDto newWingDing)
+        }
+		
+		
 		WingDingsFactory {
 			inject IWingDingsDao wingDingsDao
 		}

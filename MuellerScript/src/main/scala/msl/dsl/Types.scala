@@ -11,23 +11,23 @@ object Types {
 
   case class Dao(name: String, definitions: List[Definition]) extends Statement
 
-  case class Dto(name: String, definitions: List[Definition]) extends Statement
+  case class Dto(name: String, flexPackage: Option[FlexPackage], definitions: List[Definition]) extends Statement
 
   case class Mapping(name: String) extends Statement
 
   case class Factory(name: String, dependencies: List[Definition], methods: List[Method]) extends Statement
 
-  case class Service(name: String, namespace: NamespaceType.Value, methods: List[Method]) extends Statement
+  case class Service(name: String, flexPackage: Option[FlexPackage], methods: List[Method]) extends Statement
 
-  case class Enum(name: String, items: List[String]) extends Statement
+  case class Enum(name: String, flexPackage: Option[FlexPackage], items: List[String]) extends Statement
 
-  case class Flags(name: String, items: List[String]) extends Statement
+  case class Flags(name: String, flexPackage: Option[FlexPackage], items: List[String]) extends Statement
 
   case class Definition(name: String, definitionType: DefinitionType) {
     def forCSharp = definitionType.forCSharp + " " + name
   }
 
-  case class FlexPackage(name: String, namespace: NamespaceType.Value) extends Statement
+  case class FlexPackage(name: String, namespace: NamespaceType.Value)
 
   case class DefinitionType(variableType: String, genericType: Option[String]) {
     def forFlex: String = (variableType, genericType) match {

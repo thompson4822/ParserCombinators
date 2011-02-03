@@ -33,10 +33,10 @@ class MslParser extends RegexParsers {
     rep(statement) ^^ { case l => l.flatMap(x => x) }
 
   lazy val statement: Parser[Option[Statement]] =
-    (dao | dto | factory | service | flexPackage | enum | flags) ^^ { case s => Some(s) } |
+    (dao | dto | factory | service | enum | flags) ^^ { case s => Some(s) } |
     (singleLineComment | multiLineComment) ^^^ { None }
 
-  lazy val flexPackage: Parser[FlexPackage] = "flex" ~> ("[" ~> packageType <~ "]") ~ ("=" ~> ident) ^^ {
+  lazy val flexPackage: Parser[FlexPackage] = ("[" ~> packageType <~ "->") ~ (ident <~ "]") ^^ {
     case pkg ~ name => pkg(name)
   }
 
@@ -45,9 +45,19 @@ class MslParser extends RegexParsers {
     "Utility" ^^^ { FlexPackage(_: String, NamespaceType.Utility) } |
     "Consumer" ^^^ { FlexPackage(_: String, NamespaceType.Consumer) }
 
-  lazy val dao = daoIdent ~ daoDtoBody ^^ { case name ~ defs => Dao(name, defs) }
+  lazy val dao = daoIdent ~ daoDtoBody ^^ {
+    case name ~ defs =>
+    val result = Dao(name, defs)
+    addDao(result)
+    result
+  }
 
-  lazy val dto = dtoIdent ~ daoDtoBody ^^ { case name ~ defs => Dto(name, defs) }
+  lazy val dto = dtoIdent ~ flexPackage ~ daoDtoBody ^^ {
+    case name ~ packageDef ~ defs =>
+    val result = Dto(name, Some(packageDef), defs)
+    addDto(result)
+    result
+  }
 
   lazy val daoDtoBody = "{" ~> rep(definition) <~ "}"
 
@@ -63,18 +73,28 @@ class MslParser extends RegexParsers {
     "{" ~> rep(inject) ~ rep(method) <~ "}" ^^ { case injections ~ methods => Factory(_: String, injections, methods) }
 
   lazy val service: Parser[Service] =
-    serviceIdent ~ namespace ~ serviceBody ^^ {
+    serviceIdent ~ flexPackage ~ serviceBody ^^ {
     case name ~ nspace ~ methods =>
-      val serv = Service(name, nspace, methods)
+      val serv = Service(name, Some(nspace), methods)
       addService(serv)
       serv
   }
 
   lazy val serviceBody = "{" ~> rep(method) <~ "}"
 
-  lazy val enum = enumIdent ~ enumFlagsBody ^^ { case name ~ identifiers => Enum(name, identifiers) }
+  lazy val enum = enumIdent ~ flexPackage ~ enumFlagsBody ^^ {
+    case name ~ namespace ~ identifiers =>
+      val result = Enum(name, Some(namespace), identifiers)
+      elements(name) = result
+      result
+  }
 
-  lazy val flags = flagsIdent ~ enumFlagsBody ^^ { case name ~ identifiers => Flags(name, identifiers)}
+  lazy val flags = flagsIdent ~ flexPackage ~ enumFlagsBody ^^ {
+    case name ~ namespace ~ identifiers =>
+      val result = Flags(name, Some(namespace), identifiers)
+      elements(name) = result
+      result
+  }
 
   lazy val enumFlagsBody = "{" ~> repsep(ident, ",") <~ "}"
 
@@ -102,7 +122,7 @@ class MslParser extends RegexParsers {
       case genericType(generic, genType) =>
         genType match {
           case daoIdent(name) => addDaoReference(new Dao(name, Nil))
-          case dtoIdent(name) => addDtoReference(new Dto(name, Nil))
+          case dtoIdent(name) => addDtoReference(new Dto(name, None, Nil))
           case _ => println(genType + " was not a DAO/DTO")
         }
         DefinitionType(genType, Some(generic))
@@ -110,32 +130,50 @@ class MslParser extends RegexParsers {
     basicType ^^ { DefinitionType(_, None) }
 
   lazy val basicType =
-    "int" | "long" | "string" | "double" | "char" | "bool" |
-    daoIdent ^^ { case name => addDaoReference(new Dao(name, Nil)); name } |
-    dtoIdent ^^ { case name => addDtoReference(new Dto(name, Nil)); name } |
+    "int" | "long" | "string" | "double" | "char" | "bool" | "DateTime" |
+    daoIdent ^^ { case daoIdent(name) => addDaoReference(new Dao(name, Nil)); name } |
+    dtoIdent ^^ { case dtoIdent(name) => addDtoReference(new Dto(name, None, Nil)); name } |
     ident
 
-  def addDaoReference(d: Dao) = daos.getOrElseUpdate(d.name, d)
+  def addDaoReference(d: Dao) = elements.getOrElseUpdate(d.name, d)
 
-  def addDtoReference(d: Dto) = dtos.getOrElseUpdate(d.name, d)
+  def addDtoReference(d: Dto) = elements.getOrElseUpdate(d.name, d)
 
   def addFactory(f: Factory): Unit = {
-    factories.get(f.name) match {
-      case Some(factory) =>
+    elements.get(f.name) match {
+      case Some(factory: Factory) =>
         val dependencies = (factory.dependencies ::: f.dependencies).distinct
         val methods = (factory.methods ::: f.methods).distinct
-        factories(f.name) = f.copy(dependencies = dependencies, methods = methods)
+        elements(f.name) = f.copy(dependencies = dependencies, methods = methods)
       case _ =>
-        factories(f.name) = f
+        elements(f.name) = f
+    }
+  }
+
+  def addDto(d: Dto) = {
+    elements.get(d.name) match {
+      case Some(dto: Dto) =>
+        elements(d.name) = d.copy(definitions = dto.definitions ::: d.definitions)
+      case _ =>
+        elements(d.name) = d
+    }
+  }
+
+  def addDao(d: Dao) = {
+    elements.get(d.name) match {
+      case Some(dao: Dao) =>
+        elements(d.name) = d.copy(definitions = dao.definitions ::: d.definitions)
+      case _ =>
+        elements(d.name) = d
     }
   }
 
   def addService(s: Service): Unit = {
-    services.get(s.name) match {
-      case Some(service) =>
-        services(s.name) = s.copy(methods = (service.methods ::: s.methods).distinct)
+    elements.get(s.name) match {
+      case Some(service: Service) =>
+        elements(s.name) = s.copy(methods = (service.methods ::: s.methods).distinct)
       case _ =>
-        services(s.name) = s
+        elements(s.name) = s
     }
     addFactory(factoryFor(s))
   }

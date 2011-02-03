@@ -28,45 +28,45 @@ object Main {
 
     val m = new MslParser
     m.parseAll(m.statements, input) match {
-      case m.Success(result, _) => generate(result)
+      case m.Success(result, _) =>
+        Context.elements.map{ f=> val (key, value) = f; value}.foreach(generate)
       case other => error("Produced unexpected result: " + other.toString)
     }
   }
 
-  def generate(statements: List[Statement]) = {
-    statements foreach {
-      case flexPackage: FlexPackage => Context.setFlexContext(flexPackage)
-      case s @ Service(name, namespace, methods) => {
-        val service: Service = Context.services.get(name).get
-        Context.setNetService(namespace)
-        service.methods.foreach{
-          m =>
-            save(new CommandRequestGen(m))
-            save(new CommandResponseGen(m))
-            save(new CommandGen(name, m))
-        }
-        save(new ServiceGen(service))
-        save(new ServiceInterfaceGen(service))
+  def generate(statement: Statement) = statement match {
+    //case flexPackage: FlexPackage => Context.setFlexContext(flexPackage)
+    case s @ Service(name, Some(namespace), methods) => {
+      val service: Service = Context.elements.get(name).get.asInstanceOf[Service]
+      Context.setNetService(namespace)
+      service.methods.foreach{
+        m =>
+          save(new CommandRequestGen(m, namespace))
+          save(new CommandResponseGen(m, namespace))
+          save(new CommandGen(name, m, namespace))
       }
-      case f @ Factory(name, dependencies, methods) => {
-        val factory: Factory = Context.factories.get(name).get
-        save(new FactoryInterfaceGen(factory))
-        save(new FactoryTestInterfaceGen(factory))
-        save(new FactoryTestGen(factory))
-        if(factory.dependencies != Nil)
-          save(new FactoryGen(factory))
-        save(new FactoryClass(factory))
-        save(new FactoryTestClass(factory))
-      }
-      case d @ Dto(name, definitions) => {
-        save(new DtoGen(d))
-      }
-      case d @ Dao(name, definitions) => {
-        save(new DaoGen(d))
-        save(new DaoInterfaceGen(d))
-      }
-      case _ => error("I don't know how to generate that yet!")
+      save(new ServiceGen(service))
+      save(new ServiceInterfaceGen(service))
     }
+    case f @ Factory(name, dependencies, methods) => {
+      val factory: Factory = Context.elements.get(name).get.asInstanceOf[Factory]
+      save(new FactoryInterfaceGen(factory))
+      save(new FactoryTestInterfaceGen(factory))
+      save(new FactoryTestGen(factory))
+      if(factory.dependencies != Nil)
+        save(new FactoryGen(factory))
+      save(new FactoryClass(factory))
+      save(new FactoryTestClass(factory))
+    }
+    case d @ Dto(name, Some(namespace), definitions) => {
+      save(new DtoGen(d))
+      save(new FlexDtoGen(d, namespace))
+    }
+    case d: Dao => {
+      save(new DaoGen(d))
+      save(new DaoInterfaceGen(d))
+    }
+    case _ => error("I don't know how to generate that yet!")
   }
 
   private def showUsage() = {

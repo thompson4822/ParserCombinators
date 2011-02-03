@@ -42,8 +42,8 @@ object Context {
   // Will be netServiceConsumer, netServiceCommon, or netServiceAdmin
   var netService: String = _
 
-  def setNetService(namespace: NamespaceType.Value) =
-    netService = namespace match {
+  def setNetService(flexPackage: FlexPackage) =
+    netService = flexPackage.namespace match {
       case NamespaceType.Common => netServiceCommon
       case NamespaceType.Consumer => netServiceConsumer
       case NamespaceType.Utility => netServiceAdmin
@@ -55,20 +55,22 @@ object Context {
   var flexProject: String = _
 
   // Will indicate the sub directory or project under the flex base package for the flex project
-  var flexPackage: String = _
+  def flexPackage(p: FlexPackage): String = List(flexBasePackage, p.name).mkString(".")
 
-  def flexPath: String = List(flexProject, flexBasePath, flexPackage).mkString("/")
+  def flexPath(p: FlexPackage): String = List(flexContext(p.namespace), flexBasePath, p.name).mkString("/")
+  //def flexPath: String = List(flexProject, flexBasePath, flexPackage).mkString("/")
 
   def netPath: String = netSrc
 
-  val dtos: HashMap[String, Dto] = new HashMap
+  val elements: HashMap[String, Statement] = new HashMap
 
-  val daos: HashMap[String, Dao] = new HashMap
+  def flexContext(namespace: NamespaceType.Value) = namespace match {
+    case NamespaceType.Consumer => flexConsumerSrc
+    case NamespaceType.Common => flexCommonSrc
+    case NamespaceType.Utility => flexUtilitySrc
+  }
 
-  val services: HashMap[String, Service] = new HashMap
-
-  val factories: HashMap[String, Factory] = new HashMap
-
+  /*
   def setFlexContext(packageDef: FlexPackage) = {
     flexProject = packageDef.namespace match {
       case NamespaceType.Consumer => flexConsumerSrc
@@ -77,4 +79,5 @@ object Context {
     }
     flexPackage = packageDef.name
   }
+  */
 }

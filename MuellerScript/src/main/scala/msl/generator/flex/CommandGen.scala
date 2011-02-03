@@ -13,12 +13,12 @@ import msl.Context
  * To change this template use File | Settings | File Templates.
  */
 
-class CommandGen(serviceName: String, method: Method) extends Generator {
-  val namespace = List(Context.flexBasePackage, Context.flexPackage, "commands").mkString(".")
+class CommandGen(serviceName: String, method: Method, flexPackage: FlexPackage) extends Generator {
+  val namespace = List(Context.flexPackage(flexPackage), "commands").mkString(".")
 
-  lazy val eventPackagePartial = List(Context.flexBasePackage, Context.flexPackage, "events", method.name).mkString(".")
+  lazy val eventPackagePartial = List(Context.flexPackage(flexPackage), "events", method.name).mkString(".")
 
-  lazy val filepath = List(Context.flexPath, "commands").mkString("/")
+  lazy val filepath = List(Context.flexPath(flexPackage), "commands").mkString("/")
 
   lazy val filename = method.name + "Command.as"
 

@@ -1,8 +1,9 @@
 package msl.generator.flex
 
 import msl.generator.Generator
-import msl.dsl.Types.{Method, Command}
 import msl.Context
+import msl.dsl.Types.{FlexPackage, Method, Command}
+
 /**
  * Created by IntelliJ IDEA.
  * User: Steve
@@ -11,10 +12,10 @@ import msl.Context
  * To change this template use File | Settings | File Templates.
  */
 
-class CommandResponseGen(method: Method) extends Generator {
-  val namespace = List(Context.flexBasePackage, Context.flexPackage, "events").mkString(".")
+class CommandResponseGen(method: Method, flexPackage: FlexPackage) extends Generator {
+  val namespace = List(Context.flexPackage(flexPackage), "events").mkString(".")
 
-  lazy val filepath = List(Context.flexPath, "events").mkString("/")
+  lazy val filepath = List(Context.flexPath(flexPackage), "events").mkString("/")
   lazy val filename = method.name + "Response.as"
 
   val flexType = method.returnType.forFlex

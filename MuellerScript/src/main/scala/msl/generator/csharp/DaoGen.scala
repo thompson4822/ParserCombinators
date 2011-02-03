@@ -35,6 +35,7 @@ using Mueller.Han.Dao.Domain;
 using NHibernate;
 using NHibernate.Criterion;
 using Mueller.Han.Utility;
+
 namespace """ + namespace + """
 {
     public class """ + dao.name + " : GenericDao<" + entityName + ", long>, I" + dao.name + """
