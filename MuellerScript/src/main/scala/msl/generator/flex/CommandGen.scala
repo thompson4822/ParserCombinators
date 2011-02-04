@@ -13,7 +13,7 @@ import msl.Context
  * To change this template use File | Settings | File Templates.
  */
 
-class CommandGen(serviceName: String, method: Method, flexPackage: FlexPackage) extends Generator {
+class CommandGen(serviceName: String, method: Method, flexPackage: FlexPackage) extends Generator with CommonFlex {
   val namespace = List(Context.flexPackage(flexPackage), "commands").mkString(".")
 
   lazy val eventPackagePartial = List(Context.flexPackage(flexPackage), "events", method.name).mkString(".")
@@ -50,6 +50,7 @@ package """ + namespace + """
 	import """ + eventPackagePartial + """Request;
 	import """ + eventPackagePartial + """Response;
 	import com.mueller.mihan.utilities.LogUtils;
+""" + dtoImports(Definition("", method.returnType) :: method.parameters) + """
 
 	import flash.net.registerClassAlias;
 	import mx.collections.ArrayCollection;

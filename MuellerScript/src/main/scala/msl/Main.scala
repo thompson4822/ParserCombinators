@@ -66,7 +66,7 @@ object Main {
       save(new DaoGen(d))
       save(new DaoInterfaceGen(d))
     }
-    case _ => error("I don't know how to generate that yet!")
+    case other => error("I don't know how to generate " + other + " yet!")
   }
 
   private def showUsage() = {

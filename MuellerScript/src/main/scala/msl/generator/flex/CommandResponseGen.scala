@@ -2,7 +2,7 @@ package msl.generator.flex
 
 import msl.generator.Generator
 import msl.Context
-import msl.dsl.Types.{FlexPackage, Method, Command}
+import msl.dsl.Types.{FlexPackage, Method, Command, Definition}
 
 /**
  * Created by IntelliJ IDEA.
@@ -22,12 +22,12 @@ class CommandResponseGen(method: Method, flexPackage: FlexPackage) extends Gener
 
   val parameterFields: String =
     if(method.returnType.forCSharp != "void")
-      "    private var _result:" + flexType + ";\n"
+      "        private var _result:" + flexType + ";\n"
     else ""
 
   val parameterGetters: String =
     if(method.returnType.forCSharp != "void")
-      "    public function get result():" + flexType + "{ return _result; }\n"
+      "        public function get result():" + flexType + "{ return _result; }\n"
     else ""
 
   val constructorParameters: String =
@@ -37,13 +37,14 @@ class CommandResponseGen(method: Method, flexPackage: FlexPackage) extends Gener
 
   val constructorBody: String =
     if(method.returnType.forCSharp != "void")
-      "          _result = resultParam;\n"
+      "            _result = resultParam;\n"
     else ""
 
   override def toString = """
 package """ + namespace + """
 {
-""" + dtoImports(method.parameters) + """
+    import mx.collections.ArrayCollection;
+""" + dtoImports(List(Definition("", method.returnType))) + """
     public class """ + method.name + """Response
     {
 """ + parameterFields + "\n" + parameterGetters + """

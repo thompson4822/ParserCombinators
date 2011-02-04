@@ -40,6 +40,7 @@ class FlexDtoGen(dto: Dto, flexPackage: FlexPackage) extends Generator with Comm
   override def toString =
     """
 package """ + namespace + """ {
+    import mx.collections.ArrayCollection;
 """ + dtoImports(dto.definitions) + """
     [Bindable]
     [RemoteClass (alias=""" + "\"" + List(Context.netDto, dto.name).mkString(".") + "\"" + """)]

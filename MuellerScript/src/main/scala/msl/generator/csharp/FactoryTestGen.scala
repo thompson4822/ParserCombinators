@@ -22,10 +22,10 @@ class FactoryTestGen(factory: Factory) extends Generator {
   val deps = factory.dependencies
 
   val mockDefinitions =
-    deps.map(d => "        private Mock<" + d.definitionType.forCSharp + "> mock" + d.name.capitalize + ";").mkString("\n")
+    deps.map(d => "        private Mock<I" + d.definitionType.forCSharp + "> mock" + d.name.capitalize + ";").mkString("\n")
 
   val mockInitializations =
-    deps.map(d => "            mock" + d.name.capitalize + " = new Mock<" + d.definitionType.forCSharp + ">();").mkString("\n")
+    deps.map(d => "            mock" + d.name.capitalize + " = new Mock<I" + d.definitionType.forCSharp + ">();").mkString("\n")
 
   val mockAssignments =
     deps.map(d => "            " + factory.name.unCapitalize + "." + d.name.capitalize + " = mock" + d.name.capitalize + ".Object;").mkString("\n")

@@ -21,11 +21,11 @@ class FactoryGen(factory: Factory) extends Generator {
 
   val deps = factory.dependencies
 
-  val dependencyDeclarations = deps.map(d => "        private " + d.forCSharp + ";").mkString("\n")
+  val dependencyDeclarations = deps.map(d => "        private I" + d.forCSharp + ";").mkString("\n")
 
   val dependencySetters = deps.map(d =>
     """
-        public """ + d.definitionType.forCSharp + " " + d.name.capitalize + """
+        public I""" + d.definitionType.forCSharp + " " + d.name.capitalize + """
         {
             set { """ + d.name + """ = value; }
         }
