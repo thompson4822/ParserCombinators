@@ -36,6 +36,7 @@ object Types {
 
   case class FlexPackage(name: String, namespace: NamespaceType.Value)
 
+  // TODO: Revisit when you address Enums and Flags
   case class DefinitionType(variableType: Type, genericType: Option[String]) {
     def forFlex: String = (variableType, genericType) match {
         case (_, Some(value)) => "ArrayCollection"
@@ -44,7 +45,10 @@ object Types {
         case (Primitive("long"), None) => "Number"
         case (Primitive("string"), None) => "String"
         case (Primitive("DateTime"), None) => "Date"
+        case (Primitive("bool"), None) => "Boolean"
         case (Dto(name, _, _), None) => name
+        case (Primitive(MslParser.enumIdent(_)), None) => "int"
+        case (Primitive(MslParser.flagsIdent(_)), None) => "int"
         case _ => "Object"
       }
 

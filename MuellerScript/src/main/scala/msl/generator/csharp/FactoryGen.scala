@@ -32,7 +32,7 @@ class FactoryGen(factory: Factory) extends Generator {
     """
   ).mkString("\n")
 
-  override def toString =
+  override def toString = generationNotice +
     """
 using Mueller.Han.Business.Interfaces;
 using Mueller.Han.Dao;

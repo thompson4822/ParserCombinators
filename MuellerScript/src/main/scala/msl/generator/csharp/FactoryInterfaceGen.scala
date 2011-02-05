@@ -23,7 +23,7 @@ class FactoryInterfaceGen(factory: Factory) extends Generator {
 
   val methodSignatures = factory.methods.map(m => "        " + m.cSharpSignature + ";").mkString("\n")
 
-  override def toString = """
+  override def toString = generationNotice + """
 using System;
 using System.Collections.Generic;
 using System.Linq;

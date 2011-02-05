@@ -52,7 +52,7 @@ class ServiceGen(service: Service) extends Generator {
       functionMethod(m)
   }.mkString
 
-  override def toString = """
+  override def toString = generationNotice + """
 using System;
 using System.Collections.Generic;
 using System.Linq;

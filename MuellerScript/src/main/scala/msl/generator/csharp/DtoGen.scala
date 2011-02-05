@@ -24,7 +24,7 @@ class DtoGen(dto: Dto) extends Generator {
 """
   }.mkString
 
-  override def toString =
+  override def toString = generationNotice +
     """
 using System;
 using System.Collections.Generic;

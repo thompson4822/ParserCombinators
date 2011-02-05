@@ -30,7 +30,7 @@ class FactoryTestGen(factory: Factory) extends Generator {
   val mockAssignments =
     deps.map(d => "            " + factory.name.unCapitalize + "." + d.name.capitalize + " = mock" + d.name.capitalize + ".Object;").mkString("\n")
 
-  override def toString = """
+  override def toString = generationNotice + """
 using System;
 using System.Text;
 using System.Collections.Generic;

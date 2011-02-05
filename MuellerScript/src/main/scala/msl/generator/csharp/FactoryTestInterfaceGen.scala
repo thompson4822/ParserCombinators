@@ -23,7 +23,7 @@ class FactoryTestInterfaceGen(factory: Factory) extends Generator {
 
   val methodInterfaces = factory.methods.map(m => "        void Test" + m.name + "();").mkString("\n")
 
-  override def toString = """
+  override def toString = generationNotice + """
 using System;
 using System.Text;
 using System.Collections.Generic;

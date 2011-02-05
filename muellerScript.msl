@@ -70,8 +70,8 @@ WorkOrderDto[Utility->workOrder] {
 
 WorkOrderService[Utility->workOrder] {
 
-	WorkOrderDto GetWorkOrderById(int workOrderId)
-	IList<WorkOrderDto> GetWorkOrdersByInstallerId(int installerId)
+	WorkOrderDto GetWorkOrderById(long workOrderId)
+	IList<WorkOrderDto> GetWorkOrdersByInstallerId(long installerId)
 	WorkOrderDto SaveWorkOrder(WorkOrderDto workOrderDto)
 	WorkOrderStatusDto SaveWorkOrderStatus(WorkOrderStatusDto workOrderStatusDto)
 

@@ -22,7 +22,7 @@ class ServiceInterfaceGen(service: Service) extends Generator {
 
   val methodSignatures = service.methods.map(m => "        " + m.cSharpSignature + ";").mkString("\n")
 
-  override def toString = """
+  override def toString = generationNotice + """
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -17,4 +17,12 @@ trait Generator {
   def overwrite = true
 
   def filePathName: String = List(filepath, filename).mkString("/")
+
+  val generationNotice =
+  """
+/*
+    This file has been automatically generated.  Please do not modify its content directly,
+    as your changes will be lost the next time it is created.
+*/
+  """
 }

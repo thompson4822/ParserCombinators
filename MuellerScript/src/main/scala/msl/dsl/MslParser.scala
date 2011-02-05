@@ -10,10 +10,7 @@ import msl.Context._
  * Time: 7:53 AM
  * To change this template use File | Settings | File Templates.
  */
-
-class MslParser extends RegexParsers {
-  //this.
-
+object MslParser {
   lazy val genericType = """([a-zA-Z][a-zA-Z0-9_]*)<([a-zA-Z][a-zA-Z0-9_]*)>""".r
   lazy val ident = """([a-zA-Z][a-zA-Z0-9_]*)""".r
   lazy val factoryIdent = """([a-zA-Z][a-zA-Z0-9_]*Factory)""".r
@@ -28,6 +25,12 @@ class MslParser extends RegexParsers {
 
   lazy val singleLineComment = """//.*""".r
   lazy val multiLineComment = """/\*[^*]*\*+(?:[^*/][^*]*\*+)*/""".r
+
+}
+
+class MslParser extends RegexParsers {
+  import MslParser._
+
 
   lazy val statements: Parser[List[Statement]] =
     rep(statement) ^^ { case l => l.flatMap(x => x) }

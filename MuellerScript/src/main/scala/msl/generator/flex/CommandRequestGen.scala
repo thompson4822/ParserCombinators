@@ -31,7 +31,7 @@ class CommandRequestGen(method: Method, flexPackage: FlexPackage) extends Genera
 
   val constructorBody: String = parameters.map(d => "            _" + d.name + " = " + d.name + "Param;").mkString("\n")
 
-  override def toString = """
+  override def toString = generationNotice + """
 package """ + namespace + """
 {
 """ + dtoImports(method.parameters) + """

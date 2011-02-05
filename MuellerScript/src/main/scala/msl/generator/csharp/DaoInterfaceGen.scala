@@ -25,7 +25,7 @@ class DaoInterfaceGen(dao: Dao) extends Generator {
     result
   }
 
-  override def toString =
+  override def toString = generationNotice +
     """
 using System;
 using System.Collections.Generic;

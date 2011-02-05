@@ -40,7 +40,7 @@ class CommandResponseGen(method: Method, flexPackage: FlexPackage) extends Gener
       "            _result = resultParam;\n"
     else ""
 
-  override def toString = """
+  override def toString = generationNotice + """
 package """ + namespace + """
 {
     import mx.collections.ArrayCollection;

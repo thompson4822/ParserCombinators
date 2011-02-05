@@ -22,6 +22,8 @@ class CommandGen(serviceName: String, method: Method, flexPackage: FlexPackage) 
 
   lazy val filename = method.name + "Command.as"
 
+  override def overwrite = false
+
   private def requestArguments = method.parameters.map("request." + _.name).mkString(", ")
 
   private def responseMethod = if(method.returnType.forCSharp != "void")
