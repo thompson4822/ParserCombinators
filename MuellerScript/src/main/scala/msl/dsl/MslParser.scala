@@ -127,16 +127,16 @@ class MslParser extends RegexParsers {
           case daoIdent(name) =>
             val myDao = new Dao(name, Nil)
             addDaoReference(myDao)
-            DefinitionType(myDao, Some(generic))
+            new DefinitionType(myDao, Some(generic))
           case dtoIdent(name) =>
             val myDto = new Dto(name, None, Nil)
             addDtoReference(myDto)
-            DefinitionType(myDto, Some(generic))
-          case _ => DefinitionType(Primitive(genType), Some(generic))
+            new DefinitionType(myDto, Some(generic))
+          case _ => new DefinitionType(Primitive(genType), Some(generic))
 
         }
     } |
-    basicType ^^ { DefinitionType(_, None) }
+    basicType ^^ { new DefinitionType(_, None) }
 
   lazy val basicType =
     ("int" | "long" | "string" | "double" | "char" | "bool" | "DateTime") ^^ { case s => Primitive(s) } |
@@ -199,18 +199,4 @@ class MslParser extends RegexParsers {
     val factoryName = s.name.replace("Service", "Factory")
     Factory(factoryName, Nil, s.methods)
   }
-
-  /*
-  lazy val entity = "entity" ~> ident ~ entityBody ^^ {case name ~ body => Entity(name, body) }
-
-  lazy val entityBody = "{" ~> entityElements <~ "}"
-
-  lazy val entityElements = definition*
-
-  lazy val mapping = "mapping" ~> ident ~ mappingBody
-
-  lazy val mappingBody = "{" ~ "}"
-
-  lazy val artifactType = "enum" | "dao" | "entity" | "mapping" | "dto" | "factory" | "service"
-  */
 }

@@ -37,7 +37,8 @@ object Types {
   case class FlexPackage(name: String, namespace: NamespaceType.Value)
 
   // TODO: Revisit when you address Enums and Flags
-  case class DefinitionType(variableType: Type, genericType: Option[String]) {
+  class DefinitionType(vType: => Type, genericType: Option[String]) {
+    def variableType = vType
     def forFlex: String = (variableType, genericType) match {
         case (_, Some(value)) => "ArrayCollection"
         case (Primitive("int"), None) => "int"
