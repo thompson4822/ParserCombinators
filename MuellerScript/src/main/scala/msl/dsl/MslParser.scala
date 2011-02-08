@@ -125,36 +125,31 @@ class MslParser extends RegexParsers {
       case genericType(generic, genType) =>
         genType match {
           case daoIdent(name) =>
-            val myDao = new Dao(name, Nil)
-            addDaoReference(myDao)
-            new DefinitionType(myDao, Some(generic))
+            new DefinitionType(findElementFunc(name), Some(generic))
           case dtoIdent(name) =>
-            val myDto = new Dto(name, None, Nil)
-            addDtoReference(myDto)
-            new DefinitionType(myDto, Some(generic))
-          case _ => new DefinitionType(Primitive(genType), Some(generic))
+            new DefinitionType(findElementFunc(name), Some(generic))
+          case _ => new DefinitionType(() => Primitive(genType), Some(generic))
 
         }
     } |
     basicType ^^ { new DefinitionType(_, None) }
 
   lazy val basicType =
-    ("int" | "long" | "string" | "double" | "char" | "bool" | "DateTime") ^^ { case s => Primitive(s) } |
-    daoIdent ^^ { case daoIdent(name) =>
-      val myDao = new Dao(name, Nil)
-      addDaoReference(myDao)
-      myDao
-    } |
-    dtoIdent ^^ { case dtoIdent(name) =>
-      val myDto = new Dto(name, None, Nil)
-      addDtoReference(myDto)
-      myDto
-    } |
-    ident ^^ { case s => Primitive(s) }
+    ("int" | "long" | "string" | "double" | "char" | "bool" | "DateTime") ^^ { case s => () => Primitive(s) } |
+    daoIdent ^^ { case daoIdent(name) => findElementFunc(name) } |
+    dtoIdent ^^ { case dtoIdent(name) => findElementFunc(name) } |
+    enumIdent ^^ { case name => findElementFunc(name) } |
+    flagsIdent ^^ { case name => findElementFunc(name) } |
+    ident ^^ { case s => () => Primitive(s) }
 
-  def addDaoReference(d: Dao) = elements.getOrElseUpdate(d.name, d)
-
-  def addDtoReference(d: Dto) = elements.getOrElseUpdate(d.name, d)
+  def findElementFunc(elementName: String): () => Type = {
+    () => {
+      elements.get(elementName) match {
+        case Some(value: Type) => value
+        case _ => error("The identifier '" + elementName + "' was used, but was never defined in your script.")
+      }
+    }
+  }
 
   def addFactory(f: Factory): Unit = {
     elements.get(f.name) match {
