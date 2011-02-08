@@ -35,6 +35,7 @@ object Types {
       case "string" => "String"
       case "DateTime" => "Date"
       case "bool" => "Boolean"
+      case _ => "Object"
     }
 
     def forCSharp: String = {
