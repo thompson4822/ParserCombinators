@@ -71,7 +71,7 @@ object Main {
     }
     case d: Dao => {
       save(new DaoGen(d))
-      save(new DaoClass(d))
+      save(new DaoClassMaker(d))
       save(new DaoInterfaceGen(d))
     }
     case e: Enum => {

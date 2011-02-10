@@ -12,7 +12,7 @@ import msl.Context
  * To change this template use File | Settings | File Templates.
  */
 
-class DaoClass(dao: Dao) extends Generator with CommonNet{
+class DaoClassMaker(dao: Dao) extends Generator with CommonNet{
   lazy val namespace = List(Context.netDao, "NHibernate").mkString(".")
 
   lazy val filepath = List(Context.netPath, namespace).mkString("/")
