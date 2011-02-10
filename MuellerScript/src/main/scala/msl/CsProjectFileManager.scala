@@ -12,7 +12,7 @@ import xml._
  * To change this template use File | Settings | File Templates.
  */
 
-class ProjectFile(pathFileName: String) {
+class CsProjectFileManager(pathFileName: String) {
   val nl = System.getProperty("line.separator")
 
   private def fromFile(): Elem = {

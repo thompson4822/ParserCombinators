@@ -13,7 +13,7 @@ import java.io.FileNotFoundException
  */
 
 object Context {
-  lazy val properties: Map[String, String] = PropertiesFile.read("msl.properties") match {
+  lazy val properties: Map[String, String] = PropertiesFileManager.read("msl.properties") match {
     case Some(props) => props
     case None => throw new FileNotFoundException("msl.properties file not found")
   }

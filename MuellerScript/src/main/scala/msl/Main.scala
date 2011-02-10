@@ -36,7 +36,7 @@ object Main {
       f =>
       val (projectName, sources) = f
       println("Updating " + projectName + " project file")
-      val projectFile = new ProjectFile(List(Context.netPath, projectName, projectName + ".csproj").mkString("/"))
+      val projectFile = new CsProjectFileManager(List(Context.netPath, projectName, projectName + ".csproj").mkString("/"))
       projectFile.updateSources(sources)
     }
   }

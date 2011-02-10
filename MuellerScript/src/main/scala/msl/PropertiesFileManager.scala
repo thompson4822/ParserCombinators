@@ -8,7 +8,7 @@ package msl
  * To change this template use File | Settings | File Templates.
  */
 
-object PropertiesFile {
+object PropertiesFileManager {
   def read(filename: String) : Option[Map[String,String]] = try {
     val file = new java.io.FileInputStream(filename)
     val props = new java.util.Properties
