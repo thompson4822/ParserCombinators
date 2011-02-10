@@ -20,6 +20,8 @@ class CommandResponseGen(method: Method, flexPackage: FlexPackage) extends Gener
 
   val flexType = method.returnType.forFlex
 
+  override def overwrite = false
+
   val parameterFields: String =
     if(method.returnType.forCSharp != "void")
       "        private var _result:" + flexType + ";\n"
@@ -40,7 +42,7 @@ class CommandResponseGen(method: Method, flexPackage: FlexPackage) extends Gener
       "            _result = resultParam;\n"
     else ""
 
-  override def toString = generationNotice + """
+  override def toString = """
 package """ + namespace + """
 {
     import mx.collections.ArrayCollection;

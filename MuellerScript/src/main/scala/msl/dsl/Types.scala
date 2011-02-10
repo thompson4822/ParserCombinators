@@ -17,8 +17,8 @@ object Types {
 
   case class Entity(name: String, entityElements: List[Definition]) extends Statement
 
-  case class Dao(name: String, definitions: List[Definition]) extends Statement with Type {
-    def forFlex: String = "int"
+  case class Dao(name: String, methods: List[Method]) extends Statement with Type {
+    def forFlex: String = ""
     def forCSharp: String = ""
   }
 
@@ -52,7 +52,10 @@ object Types {
 
   case class Service(name: String, flexPackage: Option[FlexPackage], methods: List[Method]) extends Statement
 
-  case class Enum(name: String, flexPackage: Option[FlexPackage], items: List[String]) extends Statement
+  case class Enum(name: String, flexPackage: Option[FlexPackage], items: List[String]) extends Statement with Type {
+    def forFlex: String = "int"
+    def forCSharp: String = ""
+  }
 
   case class Flags(name: String, flexPackage: Option[FlexPackage], items: List[String]) extends Statement with Type {
     def forFlex: String = "int"

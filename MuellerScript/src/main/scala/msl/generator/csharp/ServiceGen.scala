@@ -13,11 +13,13 @@ import msl.dsl.Types.{Method, Service}
  * To change this template use File | Settings | File Templates.
  */
 
-class ServiceGen(service: Service) extends Generator {
-  val namespace = Context.netService
+class ServiceGen(service: Service) extends Generator with CommonNet{
+  lazy val namespace = Context.netService
 
   lazy val filepath = List(Context.netPath, Context.netService).mkString("/")
   lazy val filename = service.name + "_Gen.cs"
+
+  lazy val projectFileMapping = (namespace -> filename)
 
   val factoryInterfaceName = service.name.splitId.reverse match {
     case "Service" :: rest => "I" + rest.reverse.mkString + "Factory"
@@ -65,6 +67,8 @@ using """ + namespace + """.Interfaces;
 using log4net;
 using log4net.Config;
 using Mueller.Han.Service.Common;
+using Mueller.Han.Utility;
+using Mueller.Han.Utility.Enumerations;
 
 namespace """ + namespace + """
 {

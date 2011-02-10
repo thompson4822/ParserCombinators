@@ -73,7 +73,7 @@ package """ + namespace + """
         public function execute(request:""" + method.name + """Request):AsyncToken
         {
             LOG.debug(""" + "\"" + method.name + """Command now initiating the service call """ + method.name + """ on the service """ + serviceName.unCapitalize + "\"" + """);
-            return service.""" + method.name + """Command(""" + requestArguments + """);
+            return service.""" + method.name + """(""" + requestArguments + """);
         }
 """ + responseMethod + """
 	}

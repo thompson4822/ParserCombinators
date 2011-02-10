@@ -12,13 +12,15 @@ import msl.Context
  * To change this template use File | Settings | File Templates.
  */
 
-class ServiceInterfaceGen(service: Service) extends Generator {
-  val namespace = List(Context.netService, "Interfaces").mkString(".")
+class ServiceInterfaceGen(service: Service) extends Generator with CommonNet{
+  lazy val namespace = List(Context.netService, "Interfaces").mkString(".")
 
   lazy val filepath = List(Context.netPath, Context.netService, "Interfaces").mkString("/")
   lazy val filename = className + "_Gen.cs"
 
   lazy val className = "I" + service.name
+
+  lazy val projectFileMapping = (Context.netService -> List("Interfaces", filename).mkString("\\"))
 
   val methodSignatures = service.methods.map(m => "        " + m.cSharpSignature + ";").mkString("\n")
 
@@ -28,6 +30,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Mueller.Han.Utility;
+using Mueller.Han.Utility.Enumerations;
 using Mueller.Han.Dto;
 namespace """ + namespace + """
 {

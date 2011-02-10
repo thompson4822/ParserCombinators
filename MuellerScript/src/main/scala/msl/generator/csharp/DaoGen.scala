@@ -12,7 +12,7 @@ import msl._
  */
 
 class DaoGen(dao: Dao) extends Generator {
-  val namespace = List(Context.netDao, "NHibernate").mkString(".")
+  lazy val namespace = List(Context.netDao, "NHibernate").mkString(".")
 
   lazy val filepath = List(Context.netPath, namespace).mkString("/")
 
@@ -35,11 +35,13 @@ using Mueller.Han.Dao.Domain;
 using NHibernate;
 using NHibernate.Criterion;
 using Mueller.Han.Utility;
+using Mueller.Han.Utility.Enumerations;
 
 namespace """ + namespace + """
 {
     public partial class """ + dao.name + " : GenericDao<" + entityName + ", long>, I" + dao.name + """
     {
+
     }
 }    """
 

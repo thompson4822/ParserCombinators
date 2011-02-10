@@ -12,14 +12,16 @@ import dsl.Types.Factory
  * To change this template use File | Settings | File Templates.
  */
 
-class FactoryTestInterfaceGen(factory: Factory) extends Generator {
-  val namespace = List(Context.netFactoryTest, "Interfaces").mkString(".")
+class FactoryTestInterfaceGen(factory: Factory) extends Generator with CommonNet{
+  lazy val namespace = List(Context.netFactoryTest, "Interfaces").mkString(".")
 
   lazy val filepath = List(Context.netPath, Context.netFactoryTest, "Interfaces").mkString("/")
 
   lazy val filename = className + "Tests_Gen.cs"
 
   lazy val className = "I" + factory.name
+
+  lazy val projectFileMapping = (Context.netFactoryTest -> List("Interfaces", filename).mkString("\\"))
 
   val methodInterfaces = factory.methods.map(m => "        void Test" + m.name + "();").mkString("\n")
 
@@ -28,6 +30,8 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using Mueller.Han.Utility;
+using Mueller.Han.Utility.Enumerations;
 
 namespace """ + namespace + """
 {

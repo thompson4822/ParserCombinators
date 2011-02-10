@@ -17,7 +17,7 @@ object MslParser {
   lazy val serviceIdent = """([a-zA-Z][a-zA-Z0-9_]*Service)""".r
   lazy val packageIdent = """[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*""".r
   lazy val dtoIdent = """([a-zA-Z][a-zA-Z0-9_]*Dto)""".r
-  lazy val daoIdent = """I([a-zA-Z][a-zA-Z0-9_]*Dao)""".r
+  lazy val daoIdent = """([a-zA-Z][a-zA-Z0-9_]*Dao)""".r
   lazy val enumIdent = """([a-zA-Z][a-zA-Z0-9_]*Enum)""".r
   lazy val flagsIdent = """([a-zA-Z][a-zA-Z0-9_]*Flags)""".r
   lazy val integer = """[1-9][0-9]*""".r
@@ -48,21 +48,21 @@ class MslParser extends RegexParsers {
     "Utility" ^^^ { FlexPackage(_: String, NamespaceType.Utility) } |
     "Consumer" ^^^ { FlexPackage(_: String, NamespaceType.Consumer) }
 
-  lazy val dao = daoIdent ~ daoDtoBody ^^ {
-    case name ~ defs =>
-    val result = Dao(name, defs)
+  lazy val dao = daoIdent ~ methodBody ^^ {
+    case name ~ methods =>
+    val result = Dao(name, methods)
     elements.update(name, result)
     result
   }
 
-  lazy val dto = dtoIdent ~ flexPackage ~ daoDtoBody ^^ {
+  lazy val dto = dtoIdent ~ flexPackage ~ dtoBody ^^ {
     case name ~ packageDef ~ defs =>
     val result = Dto(name, Some(packageDef), defs)
     elements.update(name, result)
     result
   }
 
-  lazy val daoDtoBody = "{" ~> rep(definition) <~ "}"
+  lazy val dtoBody = "{" ~> rep(definition) <~ "}"
 
   lazy val factory: Parser[Factory] =
     factoryIdent ~ factoryBody ^^ {
@@ -76,14 +76,14 @@ class MslParser extends RegexParsers {
     "{" ~> rep(inject) ~ rep(method) <~ "}" ^^ { case injections ~ methods => Factory(_: String, injections, methods) }
 
   lazy val service: Parser[Service] =
-    serviceIdent ~ flexPackage ~ serviceBody ^^ {
+    serviceIdent ~ flexPackage ~ methodBody ^^ {
     case name ~ nspace ~ methods =>
       val serv = Service(name, Some(nspace), methods)
       addService(serv)
       serv
   }
 
-  lazy val serviceBody = "{" ~> rep(method) <~ "}"
+  lazy val methodBody = "{" ~> rep(method) <~ "}"
 
   lazy val enum = enumIdent ~ flexPackage ~ enumFlagsBody ^^ {
     case name ~ namespace ~ identifiers =>
@@ -174,7 +174,7 @@ class MslParser extends RegexParsers {
   def addDao(d: Dao) = {
     elements.get(d.name) match {
       case Some(dao: Dao) =>
-        elements(d.name) = d.copy(definitions = dao.definitions ::: d.definitions)
+        elements(d.name) = d.copy(methods = dao.methods ::: d.methods)
       case _ =>
         elements(d.name) = d
     }

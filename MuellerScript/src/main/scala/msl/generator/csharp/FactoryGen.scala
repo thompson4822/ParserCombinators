@@ -12,12 +12,14 @@ import dsl.Types.Factory
  * To change this template use File | Settings | File Templates.
  */
 
-class FactoryGen(factory: Factory) extends Generator {
-  val namespace = Context.netFactory
+class FactoryGen(factory: Factory) extends Generator with CommonNet{
+  lazy val namespace = Context.netFactory
 
   lazy val filepath = List(Context.netPath, Context.netFactory).mkString("/")
 
   lazy val filename = factory.name + "_Gen.cs"
+
+  lazy val projectFileMapping = (namespace -> filename)
 
   val deps = factory.dependencies
 
@@ -40,6 +42,8 @@ using Mueller.Han.Dto;
 using Spring.Transaction.Interceptor;
 using System;
 using System.Collections.Generic;
+using Mueller.Han.Utility;
+using Mueller.Han.Utility.Enumerations;
 
 namespace """ + namespace + """
 {

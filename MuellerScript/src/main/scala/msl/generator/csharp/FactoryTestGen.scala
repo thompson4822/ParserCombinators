@@ -12,12 +12,14 @@ import msl.generator.StringExtensions._
  * To change this template use File | Settings | File Templates.
  */
 
-class FactoryTestGen(factory: Factory) extends Generator {
-  val namespace = Context.netFactoryTest
+class FactoryTestGen(factory: Factory) extends Generator with CommonNet{
+  lazy val namespace = Context.netFactoryTest
 
   lazy val filepath = List(Context.netPath, Context.netFactoryTest).mkString("/")
 
   lazy val filename = factory.name + "Tests_Gen.cs"
+
+  lazy val projectFileMapping = (namespace -> filename)
 
   val deps = factory.dependencies
 
@@ -43,6 +45,8 @@ using Mueller.Han.Dao.Domain;
 using NHibernate.Criterion;
 using System.Linq.Expressions;
 using Mueller.Han.Business.Test.Interfaces;
+using Mueller.Han.Utility;
+using Mueller.Han.Utility.Enumerations;
 
 namespace Mueller.Han.Business.Test
 {

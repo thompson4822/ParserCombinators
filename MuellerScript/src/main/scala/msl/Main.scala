@@ -32,6 +32,13 @@ object Main {
         Context.elements.map{ f=> val (key, value) = f; value}.foreach(generate)
       case other => error("Produced unexpected result: " + other.toString)
     }
+    Context.projectMapping.foreach{
+      f =>
+      val (projectName, sources) = f
+      println("Updating " + projectName + " project file")
+      val projectFile = new ProjectFile(List(Context.netPath, projectName, projectName + ".csproj").mkString("/"))
+      projectFile.updateSources(sources)
+    }
   }
 
   def generate(statement: Statement) = statement match {
@@ -64,7 +71,14 @@ object Main {
     }
     case d: Dao => {
       save(new DaoGen(d))
+      save(new DaoClass(d))
       save(new DaoInterfaceGen(d))
+    }
+    case e: Enum => {
+
+    }
+    case f: Flags => {
+
     }
     case other => error("I don't know how to generate " + other + " yet!")
   }

@@ -64,6 +64,8 @@ object Context {
 
   val elements: HashMap[String, Statement] = new HashMap
 
+  val projectMapping: HashMap[String, List[String]] = new HashMap
+
   def flexContext(namespace: NamespaceType.Value) = namespace match {
     case NamespaceType.Consumer => flexConsumerSrc
     case NamespaceType.Common => flexCommonSrc

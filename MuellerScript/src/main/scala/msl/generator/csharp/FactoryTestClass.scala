@@ -9,12 +9,14 @@ import msl._
 import generator.Generator
 import msl.dsl.Types._
 
-class FactoryTestClass(factory: Factory) extends Generator {
-  val namespace = Context.netFactoryTest
+class FactoryTestClass(factory: Factory) extends Generator with CommonNet{
+  lazy val namespace = Context.netFactoryTest
 
   lazy val filepath = List(Context.netPath, Context.netFactoryTest).mkString("/")
 
   lazy val filename = factory.name + "Tests.cs"
+
+  lazy val projectFileMapping = (namespace -> filename)
 
   override def overwrite = false
 
@@ -39,6 +41,8 @@ using Mueller.Han.Dto;
 using Mueller.Han.Dao.Domain;
 using NHibernate.Criterion;
 using System.Linq.Expressions;
+using Mueller.Han.Utility;
+using Mueller.Han.Utility.Enumerations;
 
 namespace Mueller.Han.Business.Test
 {
