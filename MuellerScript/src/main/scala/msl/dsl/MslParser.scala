@@ -20,8 +20,9 @@ object MslParser {
   lazy val daoIdent = """([a-zA-Z][a-zA-Z0-9_]*Dao)""".r
   lazy val enumIdent = """([a-zA-Z][a-zA-Z0-9_]*Enum)""".r
   lazy val flagsIdent = """([a-zA-Z][a-zA-Z0-9_]*Flags)""".r
-  lazy val integer = """[1-9][0-9]*""".r
-
+  lazy val intValue = """(0|[1-9][0-9]*)""".r
+  lazy val hexValue = """0x([01-9a-fA-F]*)""".r
+  lazy val binaryValue = """([0-1])+b""".r
 
   lazy val singleLineComment = """//.*""".r
   lazy val multiLineComment = """/\*[^*]*\*+(?:[^*/][^*]*\*+)*/""".r
@@ -31,6 +32,31 @@ object MslParser {
 class MslParser extends RegexParsers {
   import MslParser._
 
+  implicit def stringToExtender(string: String) = new StringExtender(string)
+
+  class StringExtender(string: String) {
+
+    // Redo as a shift expression!
+    def fromHex: Int = {
+      def fromHexRec(value: Int, remainder: List[Char]): Int = remainder match {
+        case Nil => value
+        case x :: rest =>
+          val increment = if(x <= '9') x - '0' else (x - 'A') + 10
+          fromHexRec((value * 16) + increment, rest)
+      }
+      fromHexRec(0, string.toUpperCase.toList)
+    }
+
+    // Redo as a shift expression!
+    def fromBinary: Int = {
+      def fromBinaryRec(value: Int, remainder: List[Char]): Int = remainder match {
+        case Nil => value
+        case '0' :: rest => fromBinaryRec(value * 2, rest)
+        case '1' :: rest => fromBinaryRec((value * 2) + 1, rest)
+      }
+      fromBinaryRec(0, string.toList)
+    }
+  }
 
   lazy val statements: Parser[List[Statement]] =
     rep(statement) ^^ { case l => l.flatMap(x => x) }
@@ -100,6 +126,16 @@ class MslParser extends RegexParsers {
   }
 
   lazy val enumFlagsBody = "{" ~> repsep(ident, ",") <~ "}"
+
+  lazy val enumItem = ident ~ opt(enumDefinition)
+
+  lazy val enumDefinition = "=" ~> numericConstant
+
+  lazy val numericConstant: Parser[Int] =
+    intValue ^^ { case intValue(v) => v.toInt } |
+    hexValue ^^ { case hexValue(v) => v.fromHex }|
+    binaryValue ^^ { case binaryValue(v) => v.fromBinary }
+
 
   lazy val namespace: Parser[NamespaceType.Value] =
     "[" ~> ("Common" ^^^ { NamespaceType.Common } |
