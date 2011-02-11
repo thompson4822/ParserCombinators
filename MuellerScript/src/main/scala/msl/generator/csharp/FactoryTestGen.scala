@@ -23,6 +23,8 @@ class FactoryTestGen(factory: Factory) extends Generator with CommonNet{
 
   val deps = factory.dependencies
 
+  val dropDao = """(.*)Dao""".r
+
   val mockDefinitions =
     deps.map(d => "        private Mock<I" + d.definitionType.forCSharp + "> mock" + d.name.capitalize + ";").mkString("\n")
 
@@ -31,6 +33,10 @@ class FactoryTestGen(factory: Factory) extends Generator with CommonNet{
 
   val mockAssignments =
     deps.map(d => "            " + factory.name.unCapitalize + "." + d.name.capitalize + " = mock" + d.name.capitalize + ".Object;").mkString("\n")
+
+  def addAutoPocoStuff = deps.map(d => d.definitionType.forCSharp).
+    filter(_.endsWith("Dao")).
+    map(d => "                x.AddFromAssemblyContainingType<" + d.dropRight(3) + ">();").mkString(nl)
 
   override def toString = generationNotice + """
 using System;
@@ -44,15 +50,20 @@ using Mueller.Han.Dto;
 using Mueller.Han.Dao.Domain;
 using NHibernate.Criterion;
 using System.Linq.Expressions;
+using Mueller.Han.Business.Interfaces;
 using Mueller.Han.Business.Test.Interfaces;
 using Mueller.Han.Utility;
 using Mueller.Han.Utility.Enumerations;
+using AutoPoco.Engine;
+using AutoPoco;
 
 namespace Mueller.Han.Business.Test
 {
     [TestClass]
     public partial class """ + factory.name + """Tests : I""" + factory.name + """Tests
     {
+        private IGenerationSession _session;
+
         private """ + factory.name + " " + factory.name.unCapitalize +""";
 """ + mockDefinitions + """
 
@@ -62,6 +73,18 @@ namespace Mueller.Han.Business.Test
             """ + factory.name.unCapitalize + """ = new """ + factory.name + """();
 """ + mockInitializations + """
 """ + mockAssignments + """
+
+            IGenerationSessionFactory factory = AutoPocoContainer.Configure(x =>
+            {
+                x.Conventions(c =>
+                {
+                    c.UseDefaultConventions();
+                });
+""" + addAutoPocoStuff + """
+            });
+
+            _session = factory.CreateSession();
+
         }
     }
 }

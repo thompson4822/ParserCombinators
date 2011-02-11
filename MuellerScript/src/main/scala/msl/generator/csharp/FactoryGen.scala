@@ -44,6 +44,7 @@ using System;
 using System.Collections.Generic;
 using Mueller.Han.Utility;
 using Mueller.Han.Utility.Enumerations;
+using Mueller.Han.Dao.Domain;
 
 namespace """ + namespace + """
 {

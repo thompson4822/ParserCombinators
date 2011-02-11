@@ -1,0 +1,231 @@
+HanStatusTypeEnum[Utility->participation] {}
+ParticipationStatusTypeEnum[Utility->participation] {}
+
+CustomerHanSummaryStatisticDto[Utility->participation] {}
+
+HanFilterCriteriaDto[Utility->participation] {
+	List<ParticipationStatusTypeEnum> ParticipationStatus
+	List<long> HanPrograms
+	string LastName
+	string FirstName
+	string ServiceAddress
+	string UserName
+}
+
+DeviceDto[Utility->device]{}
+
+HanCustomerDto[Utility->participation] {
+	long CustomerAdministrationId
+	string LastName
+	string FirstName
+	string ServiceAddress
+	string SignInName
+	ParticipationStatusTypeEnum ParticipationStatus
+	int ProgramId
+}
+
+ParticipationService[Utility->participation]{
+	List<HanCustomerDto> GetParticipationStatus(HanFilterCriteriaDto hanFilterCriteriaDto)
+	CustomerHanSummaryStatisticDto GetParticipationStatusSummaryStatistics()
+	bool OptIn(CustomerOptInDto customerOptInDto)
+	//IList<HanCustomerDto> GetCustomerPrograms(long customerAdministrationId)
+	bool Approve(List<ParticipationApprovalDto> participationApprovals)
+}
+
+HanParticipationDao {
+	HanParticipation FindByCustomerAndProgram(long customerAdministrationId, long hanProgramId)
+}
+
+ProgramParticipationDao {
+        List<ProgramParticipation> Search(ParticipationFilterCriteria filterCriteria)
+}
+
+CustomerHanSummaryStatisticDao {}
+
+CustomerHanDao {}
+
+DstOffsetDao {
+	IList<DstOffset> GetOffsets(DateTime startTime, DateTime endTime)
+}
+
+ArkNETMessageDeliveryDao {
+	ArkNETMessageDelivery FindByCustomerAdministrationId(long customerAdministrationId)
+}
+
+ParticipationFactory {
+
+	inject ProgramParticipationDao programParticipationDao
+	inject CustomerHanSummaryStatisticDao customerHanSummaryStatisticDao
+	inject DstOffsetDao dstOffsetDao
+	inject CustomerHanDao customerHanDao
+	inject HanParticipationDao hanParticipationDao
+	inject WorkOrderDao workOrderDao
+	inject ExternalCommunicationFactory externalCommunicationFactory
+}
+
+UpdateHanFactory {
+
+	inject ArkNETMessageDeliveryDao arkNetMessageDeliveryDao
+	inject IncomingMessageHandlerFactory incomingMessageHandlerFactory
+}
+
+CustomerOptInDto[Utility->participation] {
+	long CustomerAdministrationId
+	string PreferredInstallTime
+	List<long> ProgramIds
+	int ACSizeInTons
+	int WaterHeaterSizeInGallons
+	int HouseSizeInSquareFeet
+	string Notes
+}
+
+ParticipationApprovalDto[Utility->participation]{
+	long HanProgramId
+	long CustomerAdministrationId
+	bool IsApproved
+	string ReasonForDenial
+}
+
+WorkOrderStatusDto[Utility->workOrder] {
+
+	long WorkOrderStatusId
+	long WorkOrderId
+	DateTime WorkOrderDate
+	long WorkOrderStatusTypeId
+	string Notes
+	long InstallerId
+
+}
+
+WorkOrderDto[Utility->workOrder] {
+
+	long WorkOrderId
+	long CustomerHanId
+	string ServiceAddress
+	string PreferredTime
+	string ContactInformation
+	string Notes
+	DateTime InstallDate
+	long InstallerId
+	WorkOrderStatusDto CurrentWorkOrderStatus
+	IList<WorkOrderStatusDto> WorkOrderStatusDto
+
+}
+
+WorkOrderService[Utility->workOrder] {
+
+	WorkOrderDto GetWorkOrderById(long workOrderId)
+	IList<WorkOrderDto> GetWorkOrdersByInstallerId(long installerId)
+	WorkOrderDto SaveWorkOrder(WorkOrderDto workOrderDto)
+	WorkOrderStatusDto SaveWorkOrderStatus(WorkOrderStatusDto workOrderStatusDto)
+
+}
+
+WorkOrderDao {}
+
+WorkOrderStatusDao {}
+
+WorkOrderDetailDao {}
+
+WorkOrderFactory {
+
+	inject WorkOrderDao workOrderDao
+	inject WorkOrderStatusDao workOrderStatusDao
+	inject WorkOrderDetailDao workOrderDetailDao
+
+}
+
+UpdateHanService[Utility->updateHan] {
+	HanStatusTypeEnum GetCurrentHanStatus(long consumerId)
+}
+
+HanProgramDto[Utility->participation] {
+	long HanProgramId
+	string Name
+	string ShortName
+	IList<HanParticipationDto> HanParticipations
+	IList<HanProgramHanDeviceTypeDto> HanProgramHanDeviceTypes
+}
+
+ParticipationStatusDto[Utility->participation] {
+	long ParticipationStatusId
+	int Status
+	DateTime DateCreated
+	long HanParticipationId
+	string Notes
+}
+CustomerEmailDto[Utility->participation]{
+        long CustomerEmailId
+        long CustomerId
+        string Email
+        bool IsPrimary
+}
+
+HanParticipationDto[Utility->participation] {
+	long HanParticipationId
+	long CustomerAdministrationId
+	HanProgramDto HanProgramDto
+	IList<ParticipationStatusDto> ParticipationStatusDtos 
+}
+
+HanProgramHanDeviceTypeDto[Utility->participation] {
+	long HanProgramHanDeviceTypeId
+	HanProgramDto HanProgramDto
+	long HanDeviceTypeId
+}
+
+HanProgramService[Utility->participation] {
+	IList<HanProgramDto> GetAllHanPrograms()
+}
+
+HanProgramDao {}
+
+HanProgramFactory {
+	inject HanProgramDao hanProgramDao
+}
+
+HanDeviceStatusDto[Utility->hanhealth] {
+	long HanDeviceStatusId
+	long HanDeviceId
+	HanHealthFlags HanHealth
+	DateTime WhenMeasured
+	long LongAddress
+	int ShortAddress
+	int StatusBits
+	int TransmitCounter
+	int LinkQuality
+	int Type
+	int DeviceType
+	int EventStatusHistory
+}
+
+HanHealthFlags[Utility->hanhealth] {}
+
+HanHealthDto[Utility->hanhealth] {
+	string UserName
+	long CustomerAdministrationId
+	long CustomerHanId
+	string FirstName
+	string LastName
+	string ServiceAddress
+	HanHealthFlags HanHealth 
+	IList<HanDeviceStatusDto> DeviceHealthList
+}
+
+HanHealthFilterDto[Utility->hanhealth] {
+	string UserName
+	HanHealthFlags HanHealth
+	string FirstName
+	string LastName
+	string ServiceAddress
+}
+
+HanHealthFactory {
+	inject DstOffsetDao dstOffsetDao
+}
+
+HanHealthService[Utility->hanhealth] {
+	IList<HanHealthDto> GetHanHealthFilter(HanHealthFilterDto filter)
+}
+
+

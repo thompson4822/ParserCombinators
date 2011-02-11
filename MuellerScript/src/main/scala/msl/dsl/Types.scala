@@ -23,7 +23,7 @@ object Types {
   }
 
   case class Dto(name: String, flexPackage: Option[FlexPackage], definitions: List[Definition]) extends Statement with Type {
-    def forFlex: String = ""
+    def forFlex: String = name
     def forCSharp: String = ""
   }
 
@@ -73,18 +73,7 @@ object Types {
     def variableType = vType()
     def forFlex: String = (variableType, genericType) match {
         case (_, Some(value)) => "ArrayCollection"
-        case (x: Primitive, None) => x.forFlex
-        /*
-        case (Primitive("float"), None) => "Number"
-        case (Primitive("long"), None) => "Number"
-        case (Primitive("string"), None) => "String"
-        case (Primitive("DateTime"), None) => "Date"
-        case (Primitive("bool"), None) => "Boolean"
-        case (Dto(name, _, _), None) => name
-        */
-        //case (Primitive(MslParser.enumIdent(_)), None) => "int"
-        //case (Primitive(MslParser.flagsIdent(_)), None) => "int"
-        case _ => "Object"
+        case (x: Type, None) => x.forFlex
       }
 
     def forCSharp: String = genericType match {

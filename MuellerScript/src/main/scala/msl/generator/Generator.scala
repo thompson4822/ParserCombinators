@@ -11,6 +11,7 @@ import msl.dsl.Types.Statement
  */
 
 trait Generator {
+  val nl = System.getProperty("line.separator")
   def namespace: String
   def filename: String
   def filepath: String

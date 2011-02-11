@@ -1,0 +1,31 @@
+Parser Remains (Do These Things Next)
+- Generate Enumerations
+- Generate Flags
+
+Wiring Support
+- Add support for updating business.xml
+- Add support for updating dao.xml
+- Add support for updating service.xml (in all service areas)
+- Add support for updating flex configuration xml
+    - Might have to add more properties?
+- Make sure all of the above is accepted by both Flex and Visual Studio
+
+Data Oracle
+- Add generated dummy data using AutoPoco
+
+Application Gen
+- Create page (mxml) per service call
+    - Doesn't need separate model file.
+    - When a service needs parameters, a form will be created to allow values to be entered for all data
+    - When a service returns:
+        - A list, a data table will be created and hooked up.
+        - A DTO, static fields will be created and shown.
+        - A primitive, a value will be created and shown.
+    - There will always be an initiate button to fire the service
+
+Various And Sundry
+- Add Scaladoc comments
+- Add tests back in again
+- Create documentation for the tool
+    - Script syntax by EBNF diagram
+    - Example snippets and the code they produce

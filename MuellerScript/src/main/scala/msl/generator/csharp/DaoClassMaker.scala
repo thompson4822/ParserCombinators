@@ -41,7 +41,7 @@ using Mueller.Han.Dao.Domain;
 using Mueller.Han.Utility;
 using Mueller.Han.Utility.Enumerations;
 
-namespace Mueller.Han.Dao
+namespace Mueller.Han.Dao.NHibernate
 {
     public partial class """ + dao.name + """
     {

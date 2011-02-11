@@ -62,8 +62,9 @@ class MslParser extends RegexParsers {
     rep(statement) ^^ { case l => l.flatMap(x => x) }
 
   lazy val statement: Parser[Option[Statement]] =
-    (dao | dto | factory | service | enum | flags) ^^ { case s => Some(s) } |
-    (singleLineComment | multiLineComment) ^^^ { None }
+    (dao | dto | factory | service | enum | flags) ^^ { case s => Some(s) } | comment ^^^ { None }
+
+  lazy val comment: Parser[Option[Statement]] = (singleLineComment | multiLineComment) ^^^ { None }
 
   lazy val flexPackage: Parser[FlexPackage] = ("[" ~> packageType <~ "->") ~ (ident <~ "]") ^^ {
     case pkg ~ name => pkg(name)
@@ -88,7 +89,7 @@ class MslParser extends RegexParsers {
     result
   }
 
-  lazy val dtoBody = "{" ~> rep(definition) <~ "}"
+  lazy val dtoBody = "{" ~> rep(definition) <~ "}" ^^ { case defs => defs.flatten }
 
   lazy val factory: Parser[Factory] =
     factoryIdent ~ factoryBody ^^ {
@@ -99,7 +100,7 @@ class MslParser extends RegexParsers {
     }
 
   lazy val factoryBody: Parser[String=>Factory] =
-    "{" ~> rep(inject) ~ rep(method) <~ "}" ^^ { case injections ~ methods => Factory(_: String, injections, methods) }
+    "{" ~> rep(inject) ~ rep(method) <~ "}" ^^ { case injections ~ methods => Factory(_: String, injections, methods.flatten) }
 
   lazy val service: Parser[Service] =
     serviceIdent ~ flexPackage ~ methodBody ^^ {
@@ -109,7 +110,7 @@ class MslParser extends RegexParsers {
       serv
   }
 
-  lazy val methodBody = "{" ~> rep(method) <~ "}"
+  lazy val methodBody: Parser[List[Method]] = "{" ~> rep(method) <~ "}" ^^ { case methods => methods.flatten }
 
   lazy val enum = enumIdent ~ flexPackage ~ enumFlagsBody ^^ {
     case name ~ namespace ~ identifiers =>
@@ -142,15 +143,21 @@ class MslParser extends RegexParsers {
     "Utility" ^^^ { NamespaceType.Utility } |
     "Consumer" ^^^ { NamespaceType.Consumer} ) <~ "]"
 
-  lazy val method = definitionType ~ ident ~ ( "(" ~> repsep(definition, ",") <~ ")" ) ^^ {
+  lazy val method: Parser[Option[Method]] =
+    comment ^^^ { None } |
+    definitionType ~ ident ~ ( "(" ~> repsep(definitionNoComment, ",") <~ ")" ) ^^ {
     case returnType ~ methodName ~ parameters =>
-        Method(methodName, returnType, parameters)
+        Some(Method(methodName, returnType, parameters))
   }
 
-  lazy val inject = "inject" ~> definition
+  lazy val inject = "inject" ~> definitionNoComment
 
-  lazy val definition: Parser[Definition] =
+  lazy val definitionNoComment: Parser[Definition] =
     definitionType ~ ident ^^ { case defType ~ identifier => Definition(identifier, defType) }
+
+  lazy val definition: Parser[Option[Definition]] =
+    comment ^^^ { None } |
+    definitionNoComment ^^ { case define => Some(define) }
 
   /*
     Note that order of the following is important.  Placing the more general basicType before genericType will
@@ -163,6 +170,10 @@ class MslParser extends RegexParsers {
           case daoIdent(name) =>
             new DefinitionType(findElementFunc(name), Some(generic))
           case dtoIdent(name) =>
+            new DefinitionType(findElementFunc(name), Some(generic))
+          case enumIdent(name) =>
+            new DefinitionType(findElementFunc(name), Some(generic))
+          case flagsIdent(name) =>
             new DefinitionType(findElementFunc(name), Some(generic))
           case _ => new DefinitionType(() => Primitive(genType), Some(generic))
 
