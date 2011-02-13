@@ -1,3 +1,20 @@
+SillyFlags[Consumer->silly] {
+	First           = 00001b,
+	SecondValue     = 00010b,
+	YetAnotherValue = 10000b,
+	SomeOtherValue,
+	SomethingElse   = 0xBE
+}
+
+SillyEnum[Consumer->silly] {
+	First           = 23,
+	SecondValue     = 00010b,
+	YetAnotherValue = 0x34,
+	SomeOtherValue,
+	SomethingElse   = 0xBE
+}
+
+
 SillyDto[Consumer->silly] {
 	Int32 Integer1
 	Int16 Integer2
@@ -19,6 +36,5 @@ SillyDto[Consumer->silly] {
 	char String3
 	Char String4
 	SqlString String5
-	Funky Object1	
 }
 

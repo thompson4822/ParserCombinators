@@ -12,7 +12,7 @@ import msl.Context
  * To change this template use File | Settings | File Templates.
  */
 
-class FlagsGen(flags: Flags) extends Generator {
+class FlagsGen(flags: Flags) extends Generator with CommonNet {
   lazy val namespace = List(Context.netUtility, "Enumerations").mkString(".")
 
   lazy val filepath = List(Context.netPath, Context.netUtility, "Enumerations").mkString("/")
@@ -22,6 +22,18 @@ class FlagsGen(flags: Flags) extends Generator {
   lazy val projectFileMapping =  (Context.netUtility -> List("Enumerations", filename).mkString("\\"))
 
   override def toString = """
-Under Construction.  Check back later.
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace """ + namespace + """
+{
+    [Flags]
+    public enum """ + flags.name + """
+    {
+""" + flags.items.map(item => "        " + item.name + " = " + item.value).mkString("," + nl) + """
+    }
+}
     """
 }

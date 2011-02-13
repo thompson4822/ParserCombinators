@@ -2,7 +2,7 @@ package msl
 
 import io.Source
 import java.io.{PrintWriter, BufferedWriter, FileWriter}
-import xml._
+import scala.xml._
 
 /**
  * Created by IntelliJ IDEA.

@@ -76,9 +76,11 @@ object Main {
     }
     case e @ Enum(_, Some(namespace), _) => {
       save(new FlexEnumGen(e, namespace))
+      save(new EnumGen(e))
     }
     case f @ Flags(_, Some(namespace), _) => {
       save(new FlexFlagsGen(f, namespace))
+      save(new FlagsGen(f))
     }
     case other => error("I don't know how to generate " + other + " yet!")
   }

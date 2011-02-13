@@ -12,7 +12,7 @@ import dsl.Types.Factory
  * To change this template use File | Settings | File Templates.
  */
 
-class FactoryTestInterfaceGen(factory: Factory) extends Generator with CommonNet{
+class FactoryTestInterfaceGen(factory: Factory) extends Generator with CommonNet {
   lazy val namespace = List(Context.netFactoryTest, "Interfaces").mkString(".")
 
   lazy val filepath = List(Context.netPath, Context.netFactoryTest, "Interfaces").mkString("/")
