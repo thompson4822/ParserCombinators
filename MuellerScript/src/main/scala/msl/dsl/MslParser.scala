@@ -21,8 +21,8 @@ object MslParser {
   lazy val enumIdent = """([a-zA-Z][a-zA-Z0-9_]*Enum)""".r
   lazy val flagsIdent = """([a-zA-Z][a-zA-Z0-9_]*Flags)""".r
   lazy val intValue = """(0|[1-9][0-9]*)""".r
-  lazy val hexValue = """0x([01-9a-fA-F]*)""".r
-  lazy val binaryValue = """([0-1])+b""".r
+  lazy val hexValue = """(0x[01-9a-fA-F]*)""".r
+  lazy val binaryValue = """([0-1]+b)""".r
 
   lazy val singleLineComment = """//.*""".r
   lazy val multiLineComment = """/\*[^*]*\*+(?:[^*/][^*]*\*+)*/""".r
@@ -44,17 +44,12 @@ class MslParser extends RegexParsers {
           val increment = if(x <= '9') x - '0' else (x - 'A') + 10
           fromHexRec((value * 16) + increment, rest)
       }
-      fromHexRec(0, string.toUpperCase.toList)
+      fromHexRec(0, string.drop(2).toUpperCase.toList)
     }
 
-    // Redo as a shift expression!
     def fromBinary: Int = {
-      def fromBinaryRec(value: Int, remainder: List[Char]): Int = remainder match {
-        case Nil => value
-        case '0' :: rest => fromBinaryRec(value * 2, rest)
-        case '1' :: rest => fromBinaryRec((value * 2) + 1, rest)
-      }
-      fromBinaryRec(0, string.toList)
+      def binaryValue(c: Char): Int = if(c=='1') 1 else 0
+      string.dropRight(1).toList.foldLeft(0)(_ * 2 + binaryValue(_))
     }
   }
 
@@ -112,30 +107,52 @@ class MslParser extends RegexParsers {
 
   lazy val methodBody: Parser[List[Method]] = "{" ~> rep(method) <~ "}" ^^ { case methods => methods.flatten }
 
-  lazy val enum = enumIdent ~ flexPackage ~ enumFlagsBody ^^ {
-    case name ~ namespace ~ identifiers =>
-      val result = Enum(name, Some(namespace), identifiers)
+  lazy val enum = enumIdent ~ flexPackage ~ enumBody ^^ {
+    case name ~ namespace ~ items =>
+      val result = Enum(name, Some(namespace), items)
       elements(name) = result
       result
   }
 
-  lazy val flags = flagsIdent ~ flexPackage ~ enumFlagsBody ^^ {
-    case name ~ namespace ~ identifiers =>
-      val result = Flags(name, Some(namespace), identifiers)
+  lazy val flags = flagsIdent ~ flexPackage ~ flagsBody ^^ {
+    case name ~ namespace ~ items =>
+      val result = Flags(name, Some(namespace), items)
       elements(name) = result
       result
   }
 
-  lazy val enumFlagsBody = "{" ~> repsep(ident, ",") <~ "}"
+  lazy val enumBody = "{" ~> repsep(enumItem, ",") <~ "}" ^^ { resolveEnumValues(_, x => x + 1) }
 
-  lazy val enumItem = ident ~ opt(enumDefinition)
+  lazy val flagsBody = "{" ~> repsep(enumItem, ",") <~ "}" ^^ { resolveEnumValues(_, nextBinaryEnum) }
 
-  lazy val enumDefinition = "=" ~> numericConstant
+  def resolveEnumValues(items: List[Tuple2[String, Option[Int]]], nextValueFunc: Int => Int): List[EnumItem] = {
+    def resolveValuesRec(currentValue: Int, parsed: List[EnumItem], remaining: List[Tuple2[String, Option[Int]]]): List[EnumItem] = remaining match {
+      case Nil => parsed.reverse
+      case (name, None) :: tail =>
+        val nextValue = nextValueFunc(currentValue) // + 1
+        resolveValuesRec(nextValue, EnumItem(name, nextValue) :: parsed, tail)
+      case (name, Some(value)) :: tail => resolveValuesRec(value, EnumItem(name, value) :: parsed, tail)
+    }
+    resolveValuesRec(0, Nil, items)
+  }
+
+  def nextBinaryEnum(value: Int): Int = {
+    def nextBinaryEnumRec(shift: Int, currentValue: Int): Int = (currentValue > 0) match {
+      case false => 1 << shift
+      case _ => nextBinaryEnumRec(shift + 1, currentValue >> 1)
+    }
+    nextBinaryEnumRec(0, value)
+  }
+
+  lazy val enumItem: Parser[Tuple2[String, Option[Int]]] =
+    ident ~ opt(enumDefinition) ^^ { case name ~ optEnumDef => (name, optEnumDef) }
+
+  lazy val enumDefinition: Parser[Int] = "=" ~> numericConstant
 
   lazy val numericConstant: Parser[Int] =
-    intValue ^^ { case intValue(v) => v.toInt } |
-    hexValue ^^ { case hexValue(v) => v.fromHex }|
-    binaryValue ^^ { case binaryValue(v) => v.fromBinary }
+    hexValue ^^ { case hexValue(v) => v.fromHex } |
+    binaryValue ^^ { case binaryValue(v) => v.fromBinary } |
+    intValue ^^ { case intValue(v) => v.toInt }
 
 
   lazy val namespace: Parser[NamespaceType.Value] =

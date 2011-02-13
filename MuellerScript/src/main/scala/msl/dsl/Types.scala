@@ -32,6 +32,7 @@ object Types {
       case "int" => "int"
       case "float" => "Number"
       case "long" => "Number"
+      case "decimal" => "Number"
       case "string" => "String"
       case "DateTime" => "Date"
       case "bool" => "Boolean"
@@ -52,12 +53,14 @@ object Types {
 
   case class Service(name: String, flexPackage: Option[FlexPackage], methods: List[Method]) extends Statement
 
-  case class Enum(name: String, flexPackage: Option[FlexPackage], items: List[String]) extends Statement with Type {
+  case class EnumItem(name: String, value: Int)
+
+  case class Enum(name: String, flexPackage: Option[FlexPackage], items: List[EnumItem]) extends Statement with Type {
     def forFlex: String = "int"
     def forCSharp: String = ""
   }
 
-  case class Flags(name: String, flexPackage: Option[FlexPackage], items: List[String]) extends Statement with Type {
+  case class Flags(name: String, flexPackage: Option[FlexPackage], items: List[EnumItem]) extends Statement with Type {
     def forFlex: String = "int"
     def forCSharp: String = ""
   }

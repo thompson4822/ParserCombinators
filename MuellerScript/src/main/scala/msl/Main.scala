@@ -74,11 +74,11 @@ object Main {
       save(new DaoClassMaker(d))
       save(new DaoInterfaceGen(d))
     }
-    case e: Enum => {
-
+    case e @ Enum(_, Some(namespace), _) => {
+      save(new FlexEnumGen(e, namespace))
     }
-    case f: Flags => {
-
+    case f @ Flags(_, Some(namespace), _) => {
+      save(new FlexFlagsGen(f, namespace))
     }
     case other => error("I don't know how to generate " + other + " yet!")
   }
