@@ -1,6 +1,7 @@
 package msl.dsl
 
 import collection.mutable.HashMap
+import msl.PropertiesFileManager
 
 object Types {
   sealed trait Statement {
@@ -28,16 +29,14 @@ object Types {
   }
 
   case class Primitive(name: String) extends Statement with Type {
-    def forFlex: String = name match {
-      case "int" => "int"
-      case "float" => "Number"
-      case "long" => "Number"
-      case "decimal" => "Number"
-      case "string" => "String"
-      case "DateTime" => "Date"
-      case "bool" => "Boolean"
-      case _ => "Object"
+    object TypeMappings {
+      val mappings = PropertiesFileManager.read("msltypes.properties") match {
+        case None => error("Can't find the file 'msltypes.properties' or it has no definitions")
+        case Some(map: Map[String,String]) => map
+      }
     }
+
+    def forFlex: String = TypeMappings.mappings.getOrElse(name, "Object")
 
     def forCSharp: String = {
       ""

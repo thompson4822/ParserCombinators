@@ -38,6 +38,7 @@ object Context {
   lazy val netFactoryTest = findProperty("netFactoryTest")
   lazy val netDto = findProperty("netDto")
   lazy val netDao = findProperty("netDao")
+  lazy val netUtility = findProperty("netUtility")
 
   // Will be netServiceConsumer, netServiceCommon, or netServiceAdmin
   var netService: String = _

@@ -1,8 +1,24 @@
-SillyFlags[Consumer->silly] {
-	FirstValue  = 00001b,
-	SecondValue = 00010b,
-	ThirdValue  = 00111b,
-	FourthValue,
-	FifthValue  = 10101b,
-	SixthValue
+SillyDto[Consumer->silly] {
+	Int32 Integer1
+	Int16 Integer2
+	int Integer3
+	Decimal Number1
+	long Number2
+	UInt64 Number3
+	Int64 Number4
+	decimal Number5
+	Single Number6
+	Double Number7
+	bool Boolean1
+	Boolean Boolean2
+	SqlBoolean Boolean3
+	DateTime Date1
+	SqlDateTime Date2
+	string String1
+	String String2
+	char String3
+	Char String4
+	SqlString String5
+	Funky Object1	
 }
+
