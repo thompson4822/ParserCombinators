@@ -1,6 +1,6 @@
 package msl
 
-import scala.xml.{Elem, XML}
+import scala.xml.{Elem, XML, Node, TopScope}
 import java.io.{FileWriter, BufferedWriter, PrintWriter}
 import scala.io.Source
 import msl.SpringFileManager.PackageIdentifier
@@ -18,8 +18,9 @@ object SpringFileManager {
   case class PackageIdentifier(name: String, properties: List[ObjectProperty] = List(ObjectProperty("SessionFactory", "SessionFactory")))
 }
 
-class SpringFileManager(pathFileName: String) {
+class SpringFileManager(packageName: String, fileName: String) {
   val nl = System.getProperty("line.separator")
+  val pathFileName = List(Context.netPath, packageName, fileName).mkString("/")
 
   private def fromFile(): Elem = {
     //def normalize(s: String) = if(s.indexOf("<Project") > 0) s.dropWhile(_ != '<') else s
@@ -29,14 +30,29 @@ class SpringFileManager(pathFileName: String) {
 
   private def toFile(xml: Elem) = {
     var string = """<?xml version="1.0" encoding="utf-8"?>""" + nl + xml.toString
+    println(string)
+    /*
     val writer = new PrintWriter(new BufferedWriter(new FileWriter(pathFileName,false)));
     writer.print(string)
     writer.close()
+    */
   }
 
   import msl.generator.StringExtensions._
 
-  def updateObjects(packageName: String, packageIdentifiers: List[PackageIdentifier]) = {
+  // Extremely important!  This gets rid of all the xml namespaces that would otherwise trip up visual studio
+  private def transformForPrinting(doc : Elem) : Elem = {
+     def stripNamespaces(node : Node) : Node = {
+         node match {
+             case e : Elem =>
+                 e.copy(scope = TopScope, child = e.child map (stripNamespaces))
+             case _ => node;
+         }
+     }
+     doc.copy( child = doc.child map (stripNamespaces) )
+  }
+
+  def updateObjects(packageIdentifiers: List[PackageIdentifier]) = {
     val xml = fromFile
     val objectSection = {
       val replacementNames: List[String] = packageIdentifiers.map(_.name.unCapitalize)
@@ -55,6 +71,6 @@ class SpringFileManager(pathFileName: String) {
         {xml \\ "description" }
         {objectSection}
       </objects>
-    toFile(resultingXml)
+    toFile(transformForPrinting(resultingXml))
   }
 }

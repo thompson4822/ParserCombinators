@@ -1,3 +1,9 @@
+SillyDao {
+	int MyFirstFunc()
+	void MySecondFunc()
+	string MyThirdFunc(int x, int y)
+}
+
 SillyFlags[Consumer->silly] {
 	First           = 00001b,
 	SecondValue     = 00010b,
