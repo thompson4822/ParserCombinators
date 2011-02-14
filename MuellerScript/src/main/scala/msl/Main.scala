@@ -43,17 +43,25 @@ object Main {
   }
 
   import SpringFileManager._
+  import msl.generator.StringExtensions._
+
   private def updateDaoXml = {
     // TODO - Could this be done more cleanly with a fold?
     val items:List[Dao] = Context.elements.filter{ _._2.isInstanceOf[Dao] }.map(t => t._2.asInstanceOf[Dao]).toList
     val manager = new SpringFileManager(List(Context.netDao, "NHibernate").mkString("."), "Dao.xml")
+    println("Updating " + manager.pathFileName)
     manager.updateObjects(items.map(i => PackageIdentifier(i.name)).toList)
   }
 
   private def updateBusinessXml = {
+    def objectPropertiesFor(f: Factory): List[ObjectProperty] = {
+      f.dependencies.map(d => ObjectProperty(d.name, d.name.unCapitalize))
+    }
     // TODO - Could this be done more cleanly with a fold?
     val items: List[Factory] = Context.elements.filter{ _._2.isInstanceOf[Factory] }.map(t => t._2.asInstanceOf[Factory]).toList
     val manager = new SpringFileManager(Context.netFactory, "Business.xml")
+    println("Updating " + manager.pathFileName)
+    manager.updateObjects(items.map(i => PackageIdentifier(i.name, objectPropertiesFor(i))).toList)
   }
 
   private def updateServiceXml = {

@@ -1,9 +1,9 @@
 package msl
 
-import scala.xml.{Elem, XML, Node, TopScope}
 import java.io.{FileWriter, BufferedWriter, PrintWriter}
 import scala.io.Source
 import msl.SpringFileManager.PackageIdentifier
+import scala.xml._
 
 /**
  * Created by IntelliJ IDEA.
@@ -29,13 +29,12 @@ class SpringFileManager(packageName: String, fileName: String) {
   }
 
   private def toFile(xml: Elem) = {
-    var string = """<?xml version="1.0" encoding="utf-8"?>""" + nl + xml.toString
-    println(string)
-    /*
+    val prettyPrinter = new PrettyPrinter(256, 2)
+    var string = """<?xml version="1.0" encoding="utf-8"?>""" + nl + prettyPrinter.format(xml)
+
     val writer = new PrintWriter(new BufferedWriter(new FileWriter(pathFileName,false)));
     writer.print(string)
     writer.close()
-    */
   }
 
   import msl.generator.StringExtensions._
@@ -54,23 +53,20 @@ class SpringFileManager(packageName: String, fileName: String) {
 
   def updateObjects(packageIdentifiers: List[PackageIdentifier]) = {
     val xml = fromFile
-    val objectSection = {
+    def objectSection = {
       val replacementNames: List[String] = packageIdentifiers.map(_.name.unCapitalize)
       // Only keep existing object nodes if they aren't among the new ones we want to generate!
-      val oldNodes = (xml \\ "object").filter(x => replacementNames.contains((x \ "@id").text) == false)
-      val newNodes = packageIdentifiers.map {
+      val oldNodes: Seq[Node] = (xml \\ "object").filter(x => replacementNames.contains((x \ "@id").text) == false)
+      val newNodes: Seq[Node] = packageIdentifiers.map {
         p =>
         <object id={p.name.unCapitalize} type={ List(packageName, p.name).mkString(".") + ", " + packageName}>
           {p.properties.map(prop => <property name={prop.name} ref={prop.ref}/>)}
         </object>
       }
-      oldNodes ++ newNodes
+      // Combine all nodes and sort their order by their id attribute
+      (oldNodes ++ newNodes).sortWith((x, y) => (x \ "@id").text < (y \ "@id").text)
     }
-    val resultingXml =
-      <objects>
-        {xml \\ "description" }
-        {objectSection}
-      </objects>
-    toFile(transformForPrinting(resultingXml))
+
+    toFile(Elem(prefix = null, label = "objects", attributes = scala.xml.Null, scope = xml.scope, ((xml \\ "description").head ++ objectSection): _*))
   }
 }
