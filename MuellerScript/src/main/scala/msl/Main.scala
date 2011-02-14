@@ -48,9 +48,11 @@ object Main {
   private def updateDaoXml = {
     // TODO - Could this be done more cleanly with a fold?
     val items:List[Dao] = Context.elements.filter{ _._2.isInstanceOf[Dao] }.map(t => t._2.asInstanceOf[Dao]).toList
-    val manager = new SpringFileManager(List(Context.netDao, "NHibernate").mkString("."), "Dao.xml")
-    println("Updating " + manager.pathFileName)
-    manager.updateObjects(items.map(i => PackageIdentifier(i.name)).toList)
+    if(items.length > 0) {
+      val manager = new SpringFileManager(List(Context.netDao, "NHibernate").mkString("."), "Dao.xml")
+      println("Updating " + manager.pathFileName)
+      manager.updateObjects(items.map(i => PackageIdentifier(i.name)).toList)
+    }
   }
 
   private def updateBusinessXml = {
@@ -59,13 +61,32 @@ object Main {
     }
     // TODO - Could this be done more cleanly with a fold?
     val items: List[Factory] = Context.elements.filter{ _._2.isInstanceOf[Factory] }.map(t => t._2.asInstanceOf[Factory]).toList
-    val manager = new SpringFileManager(Context.netFactory, "Business.xml")
-    println("Updating " + manager.pathFileName)
-    manager.updateObjects(items.map(i => PackageIdentifier(i.name, objectPropertiesFor(i))).toList)
+    if(items.length > 0) {
+      val manager = new SpringFileManager(Context.netFactory, "Business.xml")
+      println("Updating " + manager.pathFileName)
+      manager.updateObjects(items.map(i => PackageIdentifier(i.name, objectPropertiesFor(i))).toList)
+    }
   }
 
   private def updateServiceXml = {
-
+    val items: List[Service] = Context.elements.filter{ _._2.isInstanceOf[Service] }.map(t => t._2.asInstanceOf[Service]).toList
+    def packageIdentifiersFor(namespace: String): List[PackageIdentifier] = {
+      def refName(serviceName: String) = serviceName.unCapitalize.dropRight(7) + "Factory"
+      items.
+        filter(service => Context.getNetService(service.flexPackage.get) == namespace).
+        map(service => PackageIdentifier(service.name, List(ObjectProperty(name="Factory", ref=refName(service.name))))).
+        toList
+    }
+    List(Context.netServiceConsumer, Context.netServiceCommon, Context.netServiceAdmin).foreach {
+      namespace =>
+      packageIdentifiersFor(namespace) match {
+        case Nil =>
+        case packageIdentifiers: List[PackageIdentifier] =>
+          val manager = new SpringFileManager(namespace, "Services.xml")
+          println("Updating " + manager.pathFileName)
+          manager.updateObjects(packageIdentifiers)
+      }
+    }
   }
 
   private def updateProjectFiles: Unit = {
@@ -73,7 +94,13 @@ object Main {
       f =>
         val (projectName, sources) = f
         println("Updating " + projectName + " project file")
-        val projectFile = new CsProjectFileManager(List(Context.netPath, projectName, projectName + ".csproj").mkString("/"))
+        // The following is an ugly hack.  Service consumer does not follow the rules.
+        val projectFile = (projectName == Context.netServiceConsumer) match {
+          case false =>
+            new CsProjectFileManager(List(Context.netPath, projectName, projectName + ".csproj").mkString("/"))
+          case _ =>
+            new CsProjectFileManager(List(Context.netPath, projectName, projectName + ".Consumer.csproj").mkString("/"))
+        }
         projectFile.updateSources(sources)
     }
   }

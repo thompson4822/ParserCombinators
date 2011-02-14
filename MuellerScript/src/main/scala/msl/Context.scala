@@ -31,9 +31,9 @@ object Context {
   private lazy val flexUtilitySrc = findProperty("flexUtilitySrc")
   lazy val flexBasePackage = findProperty("flexBasePackage")
 
-  private lazy val netServiceConsumer = findProperty("netServiceConsumer")
-  private lazy val netServiceAdmin = findProperty("netServiceAdmin")
-  private lazy val netServiceCommon = findProperty("netServiceCommon")
+  lazy val netServiceConsumer = findProperty("netServiceConsumer")
+  lazy val netServiceAdmin = findProperty("netServiceAdmin")
+  lazy val netServiceCommon = findProperty("netServiceCommon")
   lazy val netFactory = findProperty("netFactory")
   lazy val netFactoryTest = findProperty("netFactoryTest")
   lazy val netDto = findProperty("netDto")
@@ -44,7 +44,9 @@ object Context {
   var netService: String = _
 
   def setNetService(flexPackage: FlexPackage) =
-    netService = flexPackage.namespace match {
+    netService = getNetService(flexPackage)
+
+  def getNetService(flexPackage: FlexPackage) = flexPackage.namespace match {
       case NamespaceType.Common => netServiceCommon
       case NamespaceType.Consumer => netServiceConsumer
       case NamespaceType.Utility => netServiceAdmin

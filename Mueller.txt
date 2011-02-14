@@ -4,6 +4,18 @@ SillyDao {
 	string MyThirdFunc(int x, int y)
 }
 
+SillyService[Utility->silly] {
+	int MyFirstFunc()
+	void MySecondFunc()
+	string MyThirdFunc(int x, int y)
+}	
+
+SillyConsumerService[Consumer->silly] {
+	int MyFirstFunc()
+	void MySecondFunc()
+	string MyThirdFunc(int x, int y)
+}
+
 SillyFlags[Consumer->silly] {
 	First           = 00001b,
 	SecondValue     = 00010b,
