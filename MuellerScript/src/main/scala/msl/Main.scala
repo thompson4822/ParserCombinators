@@ -47,7 +47,7 @@ object Main {
 
   private def updateDaoXml = {
     // TODO - Could this be done more cleanly with a fold?
-    val items:List[Dao] = Context.elements.filter{ _._2.isInstanceOf[Dao] }.map(t => t._2.asInstanceOf[Dao]).toList
+    val items:List[Dao] = Context.elements.collect{case (_, d: Dao) => d}.toList
     if(items.length > 0) {
       val manager = new SpringFileManager(List(Context.netDao, "NHibernate").mkString("."), "Dao.xml")
       println("Updating " + manager.pathFileName)
@@ -59,8 +59,7 @@ object Main {
     def objectPropertiesFor(f: Factory): List[ObjectProperty] = {
       f.dependencies.map(d => ObjectProperty(d.name, d.name.unCapitalize))
     }
-    // TODO - Could this be done more cleanly with a fold?
-    val items: List[Factory] = Context.elements.filter{ _._2.isInstanceOf[Factory] }.map(t => t._2.asInstanceOf[Factory]).toList
+    val items: List[Factory] = Context.elements.collect{case (_, f: Factory) => f}.toList
     if(items.length > 0) {
       val manager = new SpringFileManager(Context.netFactory, "Business.xml")
       println("Updating " + manager.pathFileName)
@@ -69,7 +68,7 @@ object Main {
   }
 
   private def updateServiceXml = {
-    val items: List[Service] = Context.elements.filter{ _._2.isInstanceOf[Service] }.map(t => t._2.asInstanceOf[Service]).toList
+    val items: List[Service] = Context.elements.collect{ case(_, s: Service) => s}.toList
     def packageIdentifiersFor(namespace: String): List[PackageIdentifier] = {
       def refName(serviceName: String) = serviceName.unCapitalize.dropRight(7) + "Factory"
       items.
@@ -124,7 +123,7 @@ object Main {
       save(new FactoryInterfaceGen(factory))
       save(new FactoryTestInterfaceGen(factory))
       save(new FactoryTestGen(factory))
-      if(factory.dependencies != Nil)
+      //if(factory.dependencies != Nil)
         save(new FactoryGen(factory))
       save(new FactoryClass(factory))
       save(new FactoryTestClass(factory))

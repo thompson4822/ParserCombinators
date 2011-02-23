@@ -14,6 +14,8 @@ import msl.generator.Generator
 trait CommonFlexEnum {
   self: Generator =>
 
+  override def overwrite = false
+
   import msl.generator.StringExtensions._
   def constName(string: String): String = string.splitId.map(_.toUpperCase).mkString("_")
 
@@ -47,7 +49,7 @@ package """ + namespace + """
             return _VALUE_MAP;
         }
 
-        public static const ALL_VALUES:Array = [""" + items.map(e => constName(e.name)).mkString(", ") + """];
+        public static const ALL_VALUES:ArrayValue = [""" + items.map(e => constName(e.name)).mkString(", ") + """];
 
 """ + getByValue(name) + """
 

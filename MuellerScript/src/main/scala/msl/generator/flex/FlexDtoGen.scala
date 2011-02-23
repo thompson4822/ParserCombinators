@@ -20,17 +20,6 @@ class FlexDtoGen(dto: Dto, flexPackage: FlexPackage) extends Generator with Comm
 
   lazy val filename = dto.name + ".as"
 
-  def dtoImports = dto.definitions.map{ _.definitionType.variableType match {
-    case d: Dto =>
-      val elementDto: Dto = Context.elements.get(d.name).get.asInstanceOf[Dto]
-      val dtoNamespace = List(Context.flexPackage(elementDto.flexPackage.get), "dtos").mkString(".")
-      if(dtoNamespace != namespace)
-        """    import """ + dtoNamespace + "." + d.name + """;
-""" else ""
-    case _ => ""
-  }
-  }.mkString
-
   def definitions = dto.definitions.map {
     d =>
 """        public var """ + d.name + ":" + d.definitionType.forFlex + """;
@@ -41,8 +30,8 @@ class FlexDtoGen(dto: Dto, flexPackage: FlexPackage) extends Generator with Comm
     """
 package """ + namespace + """
 {
-    import mx.collections.ArrayCollection;
 """ + dtoImports(dto.definitions) + """
+
     [RemoteClass (alias=""" + "\"" + List(Context.netDto, dto.name).mkString(".") + "\"" + """)]
     public class """ + dto.name + """
     {

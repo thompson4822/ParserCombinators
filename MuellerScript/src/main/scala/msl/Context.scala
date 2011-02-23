@@ -58,10 +58,9 @@ object Context {
   var flexProject: String = _
 
   // Will indicate the sub directory or project under the flex base package for the flex project
-  def flexPackage(p: FlexPackage): String = List(flexBasePackage, p.name).mkString(".")
+  def flexPackage(p: FlexPackage): String = List(flexBasePackage, p.flexSubPackage).mkString(".")
 
-  def flexPath(p: FlexPackage): String = List(flexContext(p.namespace), flexBasePath, p.name).mkString("/")
-  //def flexPath: String = List(flexProject, flexBasePath, flexPackage).mkString("/")
+  def flexPath(p: FlexPackage): String = List(flexContext(p.namespace), flexBasePath, p.flexSubDirectory).mkString("/")
 
   def netPath: String = netSrc
 

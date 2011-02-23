@@ -14,16 +14,19 @@ import generator.Generator
 
 trait CommonFlex {
   self: Generator =>
-  def dtoImports(definitions: List[Definition]) = definitions.map {
-    _.definitionType.variableType match {
-      case d: Dto =>
-        val elementDto: Dto = Context.elements.get(d.name).get.asInstanceOf[Dto]
-        val dtoNamespace = List(Context.flexPackage(elementDto.flexPackage.get), "dtos").mkString(".")
-        if(dtoNamespace != namespace)
-          """    import """ + dtoNamespace + "." + d.name + """;
-  """ else ""
-      case _ => ""
-    }
-  }.mkString
+  def dtoImports(definitions: List[Definition]) =
+    definitions.map {
+      d =>
+      (d.definitionType.variableType, d.definitionType.genericType) match {
+        case (_, Some(_)) => Some("    import mx.collections.ArrayCollection;")
+        case (d: Dto, _) =>
+          val elementDto: Dto = Context.elements.get(d.name).get.asInstanceOf[Dto]
+          val dtoNamespace = List(Context.flexPackage(elementDto.flexPackage.get), "dtos").mkString(".")
+          if(dtoNamespace != namespace)
+            Some("    import " + dtoNamespace + "." + d.name + ";")
+          else None
+        case _ => None
+      }
+    }.flatten.distinct.mkString(nl)
 
 }

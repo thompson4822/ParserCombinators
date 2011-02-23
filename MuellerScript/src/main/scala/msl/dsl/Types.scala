@@ -69,9 +69,14 @@ object Types {
   }
 
   case class FlexPackage(name: String, namespace: NamespaceType.Value)
+  {
+    val flexSubPackage = name
+
+    val flexSubDirectory = name.split('.').mkString("/")
+  }
 
   // TODO: Revisit when you address Enums and Flags
-  class DefinitionType(vType: () => Type, genericType: Option[String]) {
+  class DefinitionType(vType: () => Type, val genericType: Option[String]) {
     def variableType = vType()
     def forFlex: String = (variableType, genericType) match {
         case (_, Some(value)) => "ArrayCollection"

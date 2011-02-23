@@ -37,6 +37,7 @@ class CommandRequestGen(method: Method, flexPackage: FlexPackage) extends Genera
 package """ + namespace + """
 {
 """ + dtoImports(method.parameters) + """
+
     public class """ + method.name + """Request
     {
 """ + parameterFields + "\n\n" + parameterGetters + "\n" + """

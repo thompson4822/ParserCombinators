@@ -13,9 +13,12 @@ import msl.Context._
 object MslParser {
   lazy val genericType = """([a-zA-Z][a-zA-Z0-9_]*)<([a-zA-Z][a-zA-Z0-9_]*)>""".r
   lazy val ident = """([a-zA-Z][a-zA-Z0-9_]*)""".r
+
+  lazy val packageIdent = """([a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*)""".r
+
   lazy val factoryIdent = """([a-zA-Z][a-zA-Z0-9_]*Factory)""".r
   lazy val serviceIdent = """([a-zA-Z][a-zA-Z0-9_]*Service)""".r
-  lazy val packageIdent = """[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*""".r
+  //lazy val packageIdent = """[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*""".r
   lazy val dtoIdent = """([a-zA-Z][a-zA-Z0-9_]*Dto)""".r
   lazy val daoIdent = """([a-zA-Z][a-zA-Z0-9_]*Dao)""".r
   lazy val enumIdent = """([a-zA-Z][a-zA-Z0-9_]*Enum)""".r
@@ -61,7 +64,7 @@ class MslParser extends RegexParsers {
 
   lazy val comment: Parser[Option[Statement]] = (singleLineComment | multiLineComment) ^^^ { None }
 
-  lazy val flexPackage: Parser[FlexPackage] = ("[" ~> packageType <~ "->") ~ (ident <~ "]") ^^ {
+  lazy val flexPackage: Parser[FlexPackage] = ("[" ~> packageType <~ "->") ~ (packageIdent <~ "]") ^^ {
     case pkg ~ name => pkg(name)
   }
 
@@ -130,8 +133,8 @@ class MslParser extends RegexParsers {
       case Nil => parsed.reverse
       case (name, None) :: tail =>
         val nextValue = nextValueFunc(currentValue) // + 1
-        resolveValuesRec(nextValue, EnumItem(name, nextValue) :: parsed, tail)
-      case (name, Some(value)) :: tail => resolveValuesRec(value, EnumItem(name, value) :: parsed, tail)
+        resolveValuesRec(nextValue, EnumItem(name, currentValue) :: parsed, tail)
+      case (name, Some(value)) :: tail => resolveValuesRec(value + 1, EnumItem(name, value) :: parsed, tail)
     }
     resolveValuesRec(0, Nil, items)
   }
@@ -199,7 +202,6 @@ class MslParser extends RegexParsers {
     basicType ^^ { new DefinitionType(_, None) }
 
   lazy val basicType =
-    ("int" | "long" | "string" | "double" | "char" | "bool" | "DateTime") ^^ { case s => () => Primitive(s) } |
     daoIdent ^^ { case daoIdent(name) => findElementFunc(name) } |
     dtoIdent ^^ { case dtoIdent(name) => findElementFunc(name) } |
     enumIdent ^^ { case name => findElementFunc(name) } |

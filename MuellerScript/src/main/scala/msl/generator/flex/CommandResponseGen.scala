@@ -45,8 +45,8 @@ class CommandResponseGen(method: Method, flexPackage: FlexPackage) extends Gener
   override def toString = """
 package """ + namespace + """
 {
-    import mx.collections.ArrayCollection;
 """ + dtoImports(List(Definition("", method.returnType))) + """
+
     public class """ + method.name + """Response
     {
 """ + parameterFields + "\n" + parameterGetters + """

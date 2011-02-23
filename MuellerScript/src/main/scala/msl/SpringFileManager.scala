@@ -67,6 +67,18 @@ class SpringFileManager(packageName: String, fileName: String) {
       (oldNodes ++ newNodes).sortWith((x, y) => (x \ "@id").text < (y \ "@id").text)
     }
 
-    toFile(Elem(prefix = null, label = "objects", attributes = scala.xml.Null, scope = xml.scope, ((xml \\ "description").head ++ objectSection): _*))
+    val optionalParts = List((xml \\ "provider").headOption, (xml \\ "attribute-driven").headOption).flatten
+    val content = (xml \\ "description").head ++ optionalParts ++ objectSection
+/*
+
+      dbProvider.length match {
+      case 1 => ((xml \\ "description").head ++ dbProvider.head) ++ objectSection
+      case _ => (xml \\ "description").head ++ objectSection
+    }
+    if(transactionManager.length == 1)
+      content = (transactionManager.head ++ content.reverse).reverse
+*/
+
+    toFile(Elem(prefix = null, label = "objects", attributes = scala.xml.Null, scope = xml.scope, content: _*))
   }
 }

@@ -55,7 +55,6 @@ package """ + namespace + """
 """ + dtoImports(Definition("", method.returnType) :: method.parameters) + """
 
 	import flash.net.registerClassAlias;
-	import mx.collections.ArrayCollection;
 	import mx.controls.Alert;
 	import mx.logging.ILogger;
 	import mx.logging.Log;
