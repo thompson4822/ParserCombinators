@@ -56,9 +56,9 @@ object Main {
   }
 
   private def updateBusinessXml = {
-    def objectPropertiesFor(f: Factory): List[ObjectProperty] = {
-      f.dependencies.map(d => ObjectProperty(d.name, d.name.unCapitalize))
-    }
+    def objectPropertiesFor(f: Factory): List[ObjectProperty] =
+      f.dependencies.map(_.definitionType.variableType.name).sortWith(_ < _).map(ident => ObjectProperty(ident, ident.unCapitalize))
+
     val items: List[Factory] = Context.elements.collect{case (_, f: Factory) => f}.toList
     if(items.length > 0) {
       val manager = new SpringFileManager(Context.netFactory, "Business.xml")

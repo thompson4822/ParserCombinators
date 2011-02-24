@@ -27,9 +27,7 @@ class DaoInterfaceGen(dao: Dao) extends Generator with CommonNet{
     result
   }
 
-  def methodSignatures = dao.methods.map {
-    m => """        """ + m.cSharpSignature + """;
-"""}.mkString
+  def methodSignatures = dao.methods.map(m => "        " + m.cSharpSignature + ";").mkString(nl)
 
   override def toString = generationNotice +
     """

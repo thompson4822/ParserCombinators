@@ -26,13 +26,13 @@ class FactoryTestGen(factory: Factory) extends Generator with CommonNet{
   val dropDao = """(.*)Dao""".r
 
   val mockDefinitions =
-    deps.map(d => "        private Mock<I" + d.definitionType.forCSharp + "> mock" + d.name.capitalize + ";").mkString("\n")
+    deps.map(d => "        private Mock<I" + d.definitionType.forCSharp + "> mock" + d.name.capitalize + ";").mkString(nl)
 
   val mockInitializations =
-    deps.map(d => "            mock" + d.name.capitalize + " = new Mock<I" + d.definitionType.forCSharp + ">();").mkString("\n")
+    deps.map(d => "            mock" + d.name.capitalize + " = new Mock<I" + d.definitionType.forCSharp + ">();").mkString(nl)
 
   val mockAssignments =
-    deps.map(d => "            " + factory.name.unCapitalize + "." + d.name.capitalize + " = mock" + d.name.capitalize + ".Object;").mkString("\n")
+    deps.map(d => "            " + factory.name.unCapitalize + "." + d.name.capitalize + " = mock" + d.name.capitalize + ".Object;").mkString(nl)
 
   def addAutoPocoStuff = deps.map(d => d.definitionType.forCSharp).
     filter(_.endsWith("Dao")).

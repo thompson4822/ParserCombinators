@@ -23,7 +23,7 @@ class FactoryGen(factory: Factory) extends Generator with CommonNet{
 
   val deps = factory.dependencies
 
-  val dependencyDeclarations = deps.map(d => "        private I" + d.forCSharp + ";").mkString("\n")
+  val dependencyDeclarations = deps.map(d => "        private I" + d.forCSharp + ";").mkString(nl)
 
   val dependencySetters = deps.map(d =>
     """
@@ -32,7 +32,7 @@ class FactoryGen(factory: Factory) extends Generator with CommonNet{
             set { """ + d.name + """ = value; }
         }
     """
-  ).mkString("\n")
+  ).mkString(nl)
 
   override def toString = generationNotice +
     """

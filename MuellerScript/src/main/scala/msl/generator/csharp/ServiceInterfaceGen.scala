@@ -22,7 +22,7 @@ class ServiceInterfaceGen(service: Service) extends Generator with CommonNet{
 
   lazy val projectFileMapping = (Context.netService -> List("Interfaces", filename).mkString("\\"))
 
-  val methodSignatures = service.methods.map(m => "        " + m.cSharpSignature + ";").mkString("\n")
+  val methodSignatures = service.methods.map(m => "        " + m.cSharpSignature + ";").mkString(nl)
 
   override def toString = generationNotice + """
 using System;

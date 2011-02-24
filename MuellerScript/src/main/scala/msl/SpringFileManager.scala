@@ -39,18 +39,6 @@ class SpringFileManager(packageName: String, fileName: String) {
 
   import msl.generator.StringExtensions._
 
-  // Extremely important!  This gets rid of all the xml namespaces that would otherwise trip up visual studio
-  private def transformForPrinting(doc : Elem) : Elem = {
-     def stripNamespaces(node : Node) : Node = {
-         node match {
-             case e : Elem =>
-                 e.copy(scope = TopScope, child = e.child map (stripNamespaces))
-             case _ => node;
-         }
-     }
-     doc.copy( child = doc.child map (stripNamespaces) )
-  }
-
   def updateObjects(packageIdentifiers: List[PackageIdentifier]) = {
     val xml = fromFile
     def objectSection = {
@@ -69,16 +57,6 @@ class SpringFileManager(packageName: String, fileName: String) {
 
     val optionalParts = List((xml \\ "provider").headOption, (xml \\ "attribute-driven").headOption).flatten
     val content = (xml \\ "description").head ++ optionalParts ++ objectSection
-/*
-
-      dbProvider.length match {
-      case 1 => ((xml \\ "description").head ++ dbProvider.head) ++ objectSection
-      case _ => (xml \\ "description").head ++ objectSection
-    }
-    if(transactionManager.length == 1)
-      content = (transactionManager.head ++ content.reverse).reverse
-*/
-
     toFile(Elem(prefix = null, label = "objects", attributes = scala.xml.Null, scope = xml.scope, content: _*))
   }
 }

@@ -24,12 +24,12 @@ class CommandResponseGen(method: Method, flexPackage: FlexPackage) extends Gener
 
   val parameterFields: String =
     if(method.returnType.forCSharp != "void")
-      "        private var _result:" + flexType + ";\n"
+      "        private var _result:" + flexType + ";" + nl
     else ""
 
   val parameterGetters: String =
     if(method.returnType.forCSharp != "void")
-      "        public function get result():" + flexType + "{ return _result; }\n"
+      "        public function get result():" + flexType + "{ return _result; }" + nl
     else ""
 
   val constructorParameters: String =
@@ -39,7 +39,7 @@ class CommandResponseGen(method: Method, flexPackage: FlexPackage) extends Gener
 
   val constructorBody: String =
     if(method.returnType.forCSharp != "void")
-      "            _result = resultParam;\n"
+      "            _result = resultParam;" + nl
     else ""
 
   override def toString = """

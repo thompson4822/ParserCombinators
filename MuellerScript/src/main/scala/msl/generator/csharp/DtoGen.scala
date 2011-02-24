@@ -21,10 +21,10 @@ class DtoGen(dto: Dto) extends Generator with CommonNet{
 
   lazy val projectFileMapping = (namespace -> filename)
 
-  def properties = dto.definitions.map { d =>
-"""        public """ + d.definitionType.forCSharp + " " + d.name.capitalize + """ { get; set; }
-"""
-  }.mkString
+  def properties = dto.definitions.map {
+    d =>
+    "        public " + d.definitionType.forCSharp + " " + d.name.capitalize + " { get; set; } "
+  }.mkString(nl)
 
   override def toString = generationNotice +
     """

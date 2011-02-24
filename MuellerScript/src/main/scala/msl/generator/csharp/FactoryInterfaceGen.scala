@@ -23,7 +23,7 @@ class FactoryInterfaceGen(factory: Factory) extends Generator with CommonNet{
 
   lazy val projectFileMapping = (Context.netFactory -> List("Interfaces", filename).mkString("\\"))
 
-  val methodSignatures = factory.methods.map(m => "        " + m.cSharpSignature + ";").mkString("\n")
+  val methodSignatures = factory.methods.map(m => "        " + m.cSharpSignature + ";").mkString(nl)
 
   override def toString = generationNotice + """
 using System;

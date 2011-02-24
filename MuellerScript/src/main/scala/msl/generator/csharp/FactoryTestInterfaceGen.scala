@@ -23,7 +23,7 @@ class FactoryTestInterfaceGen(factory: Factory) extends Generator with CommonNet
 
   lazy val projectFileMapping = (Context.netFactoryTest -> List("Interfaces", filename).mkString("\\"))
 
-  val methodInterfaces = factory.methods.map(m => "        void Test" + m.name + "();").mkString("\n")
+  val methodInterfaces = factory.methods.map(m => "        void Test" + m.name + "();").mkString(nl)
 
   override def toString = generationNotice + """
 using System;

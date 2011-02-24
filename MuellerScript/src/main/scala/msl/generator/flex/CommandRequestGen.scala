@@ -24,14 +24,14 @@ class CommandRequestGen(method: Method, flexPackage: FlexPackage) extends Genera
   override def overwrite = false
 
   val parameterFields: String =
-    parameters.map(d => "        private var _" + d.name + ":" + d.definitionType.forFlex + ";").mkString("\n")
+    parameters.map(d => "        private var _" + d.name + ":" + d.definitionType.forFlex + ";").mkString(nl)
 
   val parameterGetters: String =
-    parameters.map(d => "        public function get " + d.name + "():" + d.definitionType.forFlex + "{ return _" + d.name + "; }").mkString("\n")
+    parameters.map(d => "        public function get " + d.name + "():" + d.definitionType.forFlex + "{ return _" + d.name + "; }").mkString(nl)
 
   val constructorParameters: String = parameters.map(d => d.name + "Param:" + d.definitionType.forFlex).mkString(", ")
 
-  val constructorBody: String = parameters.map(d => "            _" + d.name + " = " + d.name + "Param;").mkString("\n")
+  val constructorBody: String = parameters.map(d => "            _" + d.name + " = " + d.name + "Param;").mkString(nl)
 
   override def toString = """
 package """ + namespace + """
@@ -40,7 +40,7 @@ package """ + namespace + """
 
     public class """ + method.name + """Request
     {
-""" + parameterFields + "\n\n" + parameterGetters + "\n" + """
+""" + parameterFields + nl + nl + parameterGetters + nl + """
         public function """ + method.name + """Request(""" + constructorParameters + """)
         {
 """ + constructorBody + """
