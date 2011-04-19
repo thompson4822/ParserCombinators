@@ -15,7 +15,7 @@ import msl.Context
 class DaoClassMaker(dao: Dao) extends Generator with CommonNet{
   lazy val namespace = List(Context.netDao, "NHibernate").mkString(".")
 
-  lazy val filepath = List(Context.netPath, namespace).mkString("/")
+  lazy val filePath = List(Context.netPath, namespace).mkString("/")
 
   lazy val filename = dao.name + ".cs"
 
@@ -43,6 +43,9 @@ using Mueller.Han.Utility.Enumerations;
 
 namespace Mueller.Han.Dao.NHibernate
 {
+    /// <summary>
+    ///
+    /// </summary>
     public partial class """ + dao.name + """
     {
 """ + dao.methods.map(methodDefinition).mkString + """

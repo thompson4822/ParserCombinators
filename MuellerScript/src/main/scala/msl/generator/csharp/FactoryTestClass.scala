@@ -12,7 +12,7 @@ import msl.dsl.Types._
 class FactoryTestClass(factory: Factory) extends Generator with CommonNet{
   lazy val namespace = Context.netFactoryTest
 
-  lazy val filepath = List(Context.netPath, Context.netFactoryTest).mkString("/")
+  lazy val filePath = List(Context.netPath, Context.netFactoryTest).mkString("/")
 
   lazy val filename = factory.name + "Tests.cs"
 
@@ -20,14 +20,24 @@ class FactoryTestClass(factory: Factory) extends Generator with CommonNet{
 
   override def overwrite = false
 
-  def methodDefinition(m: Method) =
-    """
+  val methodDefinitions = {
+    // Because method names can be the same, we may need to discriminate
+    def adjustedName(method: Method): String = {
+      val methodsNamedTheSame = factory.methods.filter(_.name == method.name)
+      (methodsNamedTheSame.length, methodsNamedTheSame.indexOf(method)) match {
+        case (x, y) if(x > 1 && y > 0) => method.name + y
+        case _ => method.name
+      }
+    }
+    factory.methods.map(m =>
+      """
         [TestMethod]
-        public void Test""" + m.name + """()
+        public void Test""" + adjustedName(m) + """()
         {
             throw new NotImplementedException();
         }
-    """
+      """).mkString
+  }
 
   override def toString = """
 using System;
@@ -46,10 +56,13 @@ using Mueller.Han.Utility.Enumerations;
 
 namespace Mueller.Han.Business.Test
 {
+    /// <summary>
+    ///
+    /// </summary>
     public partial class """ + factory.name + """Tests
     {
 
-""" + factory.methods.map(methodDefinition).mkString + """
+""" + methodDefinitions + """
 
     }
 }

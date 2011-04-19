@@ -1,7 +1,5 @@
 package msl
 
-//import dsl._
-import collection.mutable.HashMap
 import generator.Generator
 import msl.dsl.MslParser
 import msl.dsl.Types._
@@ -24,16 +22,24 @@ object Main {
     if(args.length == 0)
       showUsage
 
-    val input = fromFile(args(0), "utf-8").mkString
+    GenerationManager.parseFile(args(0))
+    Context.elements.map{ f=> val (key, value) = f; value}.foreach(GenerationManager.generate)
 
-    val m = new MslParser
-    m.parseAll(m.statements, input) match {
-      case m.Success(result, _) =>
-        Context.elements.map{ f=> val (key, value) = f; value}.foreach(generate)
-      case other => error("Produced unexpected result: " + other.toString)
-    }
     updateProjectFiles
     updateSpringFiles
+  }
+
+  private def showUsage() = {
+    println("""
+Mueller Script Language (2011 by Steve Thompson)
+usage:
+
+java -jar <JARFILE NAME> <SCRIPT NAME>
+
+where JARFILE NAME is the filename of the msl tool, and SCRIPT NAME is the
+name of the script that instructs the tool on what files to generate.
+    """)
+    exit(1)
   }
 
   private def updateSpringFiles: Unit = {
@@ -104,9 +110,25 @@ object Main {
     }
   }
 
+}
+
+object GenerationManager {
+  var currentFile: String = _
+
+  def parseFile(filename: String) = {
+    val input = fromFile(filename, "utf-8").mkString
+    currentFile = filename
+
+    val m = new MslParser
+    m.parseAll(m.statements, input) match {
+      case m.Success(result, _) => result
+      case other => error("Produced unexpected result: " + other.toString)
+    }
+  }
+
   def generate(statement: Statement) = statement match {
     //case flexPackage: FlexPackage => Context.setFlexContext(flexPackage)
-    case s @ Service(name, Some(namespace), methods) => {
+    case s @ Service(name, Some(namespace), methods, _) => {
       val service: Service = Context.elements.get(name).get.asInstanceOf[Service]
       Context.setNetService(namespace)
       service.methods.foreach{
@@ -118,17 +140,17 @@ object Main {
       save(new ServiceGen(service))
       save(new ServiceInterfaceGen(service))
     }
-    case f @ Factory(name, dependencies, methods) => {
+    case f @ Factory(name, dependencies, methods, _) => {
       val factory: Factory = Context.elements.get(name).get.asInstanceOf[Factory]
       save(new FactoryInterfaceGen(factory))
       save(new FactoryTestInterfaceGen(factory))
       save(new FactoryTestGen(factory))
-      //if(factory.dependencies != Nil)
-        save(new FactoryGen(factory))
+      save(new FactoryGen(factory))
       save(new FactoryClass(factory))
       save(new FactoryTestClass(factory))
     }
-    case d @ Dto(name, Some(namespace), definitions) => {
+    case d @ Dto(name, Some(namespace), definitions, _) => {
+      save(new DataSourceGen(d))
       save(new DtoGen(d))
       save(new FlexDtoGen(d, namespace))
     }
@@ -137,33 +159,20 @@ object Main {
       save(new DaoClassMaker(d))
       save(new DaoInterfaceGen(d))
     }
-    case e @ Enum(_, Some(namespace), _) => {
+    case e @ Enum(_, Some(namespace), _, _) => {
       save(new FlexEnumGen(e, namespace))
       save(new EnumGen(e))
     }
-    case f @ Flags(_, Some(namespace), _) => {
+    case f @ Flags(_, Some(namespace), _, _) => {
       save(new FlexFlagsGen(f, namespace))
       save(new FlagsGen(f))
     }
     case other => error("I don't know how to generate " + other + " yet!")
   }
 
-  private def showUsage() = {
-    println("""
-Mueller Script Language (2011 by Steve Thompson)
-usage:
-
-java -jar <JARFILE NAME> <SCRIPT NAME>
-
-where JARFILE NAME is the filename of the msl tool, and SCRIPT NAME is the
-name of the script that instructs the tool on what files to generate.
-    """)
-    exit(1)
-  }
-
   private def save(g: Generator) = {
     // Make sure the path exists
-    (new File(g.filepath)).mkdirs
+    (new File(g.filePath)).mkdirs
     // Save the file
     if(shouldSave(g)) {
       println("Writing: " + g.filePathName)
@@ -171,7 +180,6 @@ name of the script that instructs the tool on what files to generate.
       writer.print(g.toString)
       writer.close()
     }
-    //if(g.overwrite == false && (new File()).exists)
   }
 
   private def shouldSave(g: Generator) = {

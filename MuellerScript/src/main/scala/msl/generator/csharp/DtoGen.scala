@@ -15,7 +15,7 @@ import dsl.Types._
 class DtoGen(dto: Dto) extends Generator with CommonNet{
   lazy val namespace = Context.netDto
 
-  lazy val filepath = List(Context.netPath, namespace).mkString("/")
+  lazy val filePath = List(Context.netPath, namespace).mkString("/")
 
   lazy val filename = dto.name + "_Gen.cs"
 
@@ -37,6 +37,9 @@ using Mueller.Han.Utility.Enumerations;
 
 namespace """ + namespace + """
 {
+    /// <summary>
+    ///
+    /// </summary>
     public class """ + dto.name + """
     {
 """ + properties + """

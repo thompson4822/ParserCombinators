@@ -6,7 +6,7 @@ import org.mockito.Mockito._
 import org.mockito.BDDMockito.{given => givenThat}
 import org.junit.Assert._
 import org.scalatest.{GivenWhenThen, BeforeAndAfterEach, FeatureSpec}
-import Types._
+//import Types._
 
 class EnumSpec extends FeatureSpec with GivenWhenThen with MockitoSugar
 with BeforeAndAfterEach with ShouldMatchers {

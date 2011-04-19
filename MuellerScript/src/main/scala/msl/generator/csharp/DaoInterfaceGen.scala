@@ -11,10 +11,10 @@ import msl._
  * To change this template use File | Settings | File Templates.
  */
 
-class DaoInterfaceGen(dao: Dao) extends Generator with CommonNet{
+class DaoInterfaceGen(dao: Dao) extends Generator with CommonNet {
   lazy val namespace = Context.netDao
 
-  lazy val filepath = List(Context.netPath, namespace).mkString("/")
+  lazy val filePath = List(Context.netPath, namespace).mkString("/")
 
   lazy val filename = "I" + dao.name + "_Gen.cs"
 
@@ -27,7 +27,14 @@ class DaoInterfaceGen(dao: Dao) extends Generator with CommonNet{
     result
   }
 
-  def methodSignatures = dao.methods.map(m => "        " + m.cSharpSignature + ";").mkString(nl)
+  def documentation = (dao.documentation match {
+    case None => List(dao.name)
+    case Some(x) =>
+      val summary = new SummaryTextParser(x)
+      summary.paragraphs
+  }).map(str => "    ///  <para>" + str + "</para>").mkString(nl)
+
+  def methodSignatures = dao.methods.map(m => List(methodDocumentation(m), "        " + m.cSharpSignature + ";").mkString(nl)).mkString(nl + nl)
 
   override def toString = generationNotice +
     """
@@ -41,6 +48,7 @@ using Mueller.Han.Utility.Enumerations;
 
 namespace """ + namespace + """
 {
+""" + interfaceDocumentation(dao.name, docs = dao.documentation) + """
     public partial interface I""" + dao.name + " : IGenericDao<" + entityName + """, long>
     {
 """ + methodSignatures + """

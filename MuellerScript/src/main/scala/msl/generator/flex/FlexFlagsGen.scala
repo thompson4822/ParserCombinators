@@ -2,7 +2,7 @@ package msl.generator.flex
 
 import msl.generator.Generator
 import msl.Context
-import msl.dsl.Types.{EnumItem, FlexPackage, Flags}
+import msl.dsl.Types.{FlexPackage, Flags}
 
 /**
  * Created by IntelliJ IDEA.
@@ -14,9 +14,8 @@ import msl.dsl.Types.{EnumItem, FlexPackage, Flags}
 
 class FlexFlagsGen(flags: Flags, flexPackage: FlexPackage) extends Generator with CommonFlexEnum {
   val namespace = List(Context.flexPackage(flexPackage), "enums").mkString(".")
-  //val namespace = List(Context.flexBasePackage, Context.flexPackage, "dtos").mkString(".")
 
-  lazy val filepath = List(Context.flexPath(flexPackage), "enums").mkString("/")
+  lazy val filePath = List(Context.flexPath(flexPackage), "enums").mkString("/")
 
   lazy val filename = flags.name + ".as"
 

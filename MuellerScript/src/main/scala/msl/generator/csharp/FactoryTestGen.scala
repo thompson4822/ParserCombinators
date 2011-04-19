@@ -15,7 +15,7 @@ import msl.generator.StringExtensions._
 class FactoryTestGen(factory: Factory) extends Generator with CommonNet{
   lazy val namespace = Context.netFactoryTest
 
-  lazy val filepath = List(Context.netPath, Context.netFactoryTest).mkString("/")
+  lazy val filePath = List(Context.netPath, Context.netFactoryTest).mkString("/")
 
   lazy val filename = factory.name + "Tests_Gen.cs"
 

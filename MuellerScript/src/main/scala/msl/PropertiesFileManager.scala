@@ -22,7 +22,6 @@ object PropertiesFileManager {
       vals += (item.getKey.toString ->item.getValue.toString)
     }
     Some(vals.toMap)
-    //Some(vals.toMap.withDefaultValue(""))
   }
   catch {
     case e:Exception => println("Properties.loadFile: " + e)

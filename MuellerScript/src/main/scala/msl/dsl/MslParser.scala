@@ -3,6 +3,8 @@ package msl.dsl
 import util.parsing.combinator.RegexParsers
 import Types._
 import msl.Context._
+import msl.GenerationManager
+
 /**
  * Created by IntelliJ IDEA.
  * User: Steve
@@ -12,13 +14,16 @@ import msl.Context._
  */
 object MslParser {
   lazy val genericType = """([a-zA-Z][a-zA-Z0-9_]*)<([a-zA-Z][a-zA-Z0-9_]*)>""".r
+  lazy val argumentIdent = """(\([^\)]*\))""".r
   lazy val ident = """([a-zA-Z][a-zA-Z0-9_]*)""".r
+  lazy val stringIdent = """"([^"]*)"""".r
+
+  lazy val dataSourceIdent = """([a-zA-Z][a-zA-Z0-9_]*Source)""".r
 
   lazy val packageIdent = """([a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*)""".r
 
   lazy val factoryIdent = """([a-zA-Z][a-zA-Z0-9_]*Factory)""".r
   lazy val serviceIdent = """([a-zA-Z][a-zA-Z0-9_]*Service)""".r
-  //lazy val packageIdent = """[a-zA-Z][a-zA-Z0-9_]*(\.[a-zA-Z][a-zA-Z0-9_]*)*""".r
   lazy val dtoIdent = """([a-zA-Z][a-zA-Z0-9_]*Dto)""".r
   lazy val daoIdent = """([a-zA-Z][a-zA-Z0-9_]*Dao)""".r
   lazy val enumIdent = """([a-zA-Z][a-zA-Z0-9_]*Enum)""".r
@@ -29,6 +34,7 @@ object MslParser {
 
   lazy val singleLineComment = """//.*""".r
   lazy val multiLineComment = """/\*[^*]*\*+(?:[^*/][^*]*\*+)*/""".r
+  lazy val nDocComment = """/~([^~]*)~/""".r
 
 }
 
@@ -57,12 +63,17 @@ class MslParser extends RegexParsers {
   }
 
   lazy val statements: Parser[List[Statement]] =
-    rep(statement) ^^ { case l => l.flatMap(x => x) }
+    rep(statement) ^^ { case l => l.flatten }
 
-  lazy val statement: Parser[Option[Statement]] =
-    (dao | dto | factory | service | enum | flags) ^^ { case s => Some(s) } | comment ^^^ { None }
+  lazy val statement: Parser[List[Statement]] =
+    (dao | dto | factory | service | enum | flags) ^^ { case s => List(s) } | comment ^^^ { Nil } | include
 
-  lazy val comment: Parser[Option[Statement]] = (singleLineComment | multiLineComment) ^^^ { None }
+  lazy val comment = (singleLineComment | multiLineComment)
+
+  lazy val include: Parser[List[Statement]] = "include" ~> stringIdent ^^ {
+    case stringIdent(filename) =>
+      GenerationManager.parseFile(filename)
+  }
 
   lazy val flexPackage: Parser[FlexPackage] = ("[" ~> packageType <~ "->") ~ (packageIdent <~ "]") ^^ {
     case pkg ~ name => pkg(name)
@@ -73,37 +84,39 @@ class MslParser extends RegexParsers {
     "Utility" ^^^ { FlexPackage(_: String, NamespaceType.Utility) } |
     "Consumer" ^^^ { FlexPackage(_: String, NamespaceType.Consumer) }
 
-  lazy val dao = daoIdent ~ methodBody ^^ {
-    case name ~ methods =>
-    val result = Dao(name, methods)
+  lazy val codeComment = nDocComment ^^ { case nDocComment(c) => c }
+
+  lazy val dao = opt(codeComment) ~ daoIdent ~ methodBody ^^ {
+    case comment ~ name ~ methods =>
+    val result = Dao(name, methods, comment)
     elements.update(name, result)
     result
   }
 
-  lazy val dto = dtoIdent ~ flexPackage ~ dtoBody ^^ {
-    case name ~ packageDef ~ defs =>
-    val result = Dto(name, Some(packageDef), defs)
+  lazy val dto = opt(codeComment) ~ dtoIdent ~ flexPackage ~ dtoBody ^^ {
+    case comment ~ name ~ packageDef ~ defs =>
+    val result = Dto(name, Some(packageDef), defs, comment)
     elements.update(name, result)
     result
   }
 
-  lazy val dtoBody = "{" ~> rep(definition) <~ "}" ^^ { case defs => defs.flatten }
+  lazy val dtoBody = "{" ~> rep(dtoDefinition) <~ "}" ^^ { case defs => defs.flatten }
 
   lazy val factory: Parser[Factory] =
-    factoryIdent ~ factoryBody ^^ {
-      case name ~ body =>
-        val fact = body(name)
+    opt(codeComment) ~ factoryIdent ~ factoryBody ^^ {
+      case comment ~ name ~ body =>
+        val fact = body(name, comment)
         addFactory(fact)
         fact
     }
 
-  lazy val factoryBody: Parser[String=>Factory] =
-    "{" ~> rep(inject) ~ rep(method) <~ "}" ^^ { case injections ~ methods => Factory(_: String, injections, methods.flatten) }
+  lazy val factoryBody: Parser[(String, Option[String])=>Factory] =
+    "{" ~> rep(inject) ~ rep(method) <~ "}" ^^ { case injections ~ methods => Factory(_: String, injections, methods.flatten, _: Option[String]) }
 
   lazy val service: Parser[Service] =
-    serviceIdent ~ flexPackage ~ methodBody ^^ {
-    case name ~ nspace ~ methods =>
-      val serv = Service(name, Some(nspace), methods)
+    opt(codeComment) ~ serviceIdent ~ flexPackage ~ methodBody ^^ {
+    case comment ~ name ~ nspace ~ methods =>
+      val serv = Service(name, Some(nspace), methods, comment)
       addService(serv)
       serv
   }
@@ -128,8 +141,8 @@ class MslParser extends RegexParsers {
 
   lazy val flagsBody = "{" ~> repsep(enumItem, ",") <~ "}" ^^ { resolveEnumValues(_, nextBinaryEnum) }
 
-  def resolveEnumValues(items: List[Tuple2[String, Option[Int]]], nextValueFunc: Int => Int): List[EnumItem] = {
-    def resolveValuesRec(currentValue: Int, parsed: List[EnumItem], remaining: List[Tuple2[String, Option[Int]]]): List[EnumItem] = remaining match {
+  def resolveEnumValues(items: List[(String, Option[Int])], nextValueFunc: Int => Int): List[EnumItem] = {
+    def resolveValuesRec(currentValue: Int, parsed: List[EnumItem], remaining: List[(String, Option[Int])]): List[EnumItem] = remaining match {
       case Nil => parsed.reverse
       case (name, None) :: tail =>
         val nextValue = nextValueFunc(currentValue) // + 1
@@ -147,7 +160,7 @@ class MslParser extends RegexParsers {
     nextBinaryEnumRec(0, value)
   }
 
-  lazy val enumItem: Parser[Tuple2[String, Option[Int]]] =
+  lazy val enumItem: Parser[(String, Option[Int])] =
     ident ~ opt(enumDefinition) ^^ { case name ~ optEnumDef => (name, optEnumDef) }
 
   lazy val enumDefinition: Parser[Int] = "=" ~> numericConstant
@@ -165,9 +178,9 @@ class MslParser extends RegexParsers {
 
   lazy val method: Parser[Option[Method]] =
     comment ^^^ { None } |
-    definitionType ~ ident ~ ( "(" ~> repsep(definitionNoComment, ",") <~ ")" ) ^^ {
-    case returnType ~ methodName ~ parameters =>
-        Some(Method(methodName, returnType, parameters))
+    opt(codeComment) ~ definitionType ~ ident ~ ( "(" ~> repsep(definitionNoComment, ",") <~ ")" ) ^^ {
+    case comment ~ returnType ~ methodName ~ parameters =>
+        Some(Method(methodName, returnType, parameters, comment))
   }
 
   lazy val inject = "inject" ~> definitionNoComment
@@ -178,6 +191,16 @@ class MslParser extends RegexParsers {
   lazy val definition: Parser[Option[Definition]] =
     comment ^^^ { None } |
     definitionNoComment ^^ { case define => Some(define) }
+
+  lazy val dtoDefinition: Parser[Option[DtoDefinition]] =
+    comment ^^^ { None } |
+    definitionType ~ ident ~ opt(dataSource) ^^ { case defType ~ identifier ~ dSource => Some(new DtoDefinition(identifier, defType, dSource)) }
+
+  lazy val dataSource: Parser[DataSource] =
+    "use" ~> dataSourceIdent ~ opt(argumentIdent) ^^ {
+      case sourceName ~ args =>
+        if(args == None) DataSource(sourceName) else DataSource(sourceName, args.get)
+    }
 
   /*
     Note that order of the following is important.  Placing the more general basicType before genericType will
@@ -206,13 +229,17 @@ class MslParser extends RegexParsers {
     dtoIdent ^^ { case dtoIdent(name) => findElementFunc(name) } |
     enumIdent ^^ { case name => findElementFunc(name) } |
     flagsIdent ^^ { case name => findElementFunc(name) } |
+    ident ~ "?" ^^ { case s ~ nullable => () => Primitive(s, isNullable = true) } |
+    ident ~ "[]" ^^ { case s ~ array => () => Primitive(s, isArray = true) } |
     ident ^^ { case s => () => Primitive(s) }
 
   def findElementFunc(elementName: String): () => Type = {
     () => {
       elements.get(elementName) match {
         case Some(value: Type) => value
-        case _ => error("The identifier '" + elementName + "' was used, but was never defined in your script.")
+        case _ =>
+          println("ERROR: The identifier '" + elementName + "' encountered in file " + GenerationManager.currentFile + " is never actually defined.")
+          exit(1)
       }
     }
   }

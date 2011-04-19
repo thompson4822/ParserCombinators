@@ -22,7 +22,7 @@ class CsProjectFileManager(pathFileName: String) {
   }
 
   private def toFile(xml: Elem) = {
-    var string = """<?xml version="1.0" encoding="utf-8"?>""" + nl + xml.toString
+    val string = """<?xml version="1.0" encoding="utf-8"?>""" + nl + xml.toString
     val writer = new PrintWriter(new BufferedWriter(new FileWriter(pathFileName,false)));
     writer.print(string)
     writer.close()
@@ -43,7 +43,7 @@ class CsProjectFileManager(pathFileName: String) {
   def updateSources(sourceFileNames: List[String]) = {
     val xml = fromFile
     val compileSection = {
-      val includes: List[String] = (sourceFileNames ::: ( xml \\ "Compile").map(x => (x \ "@Include").text).toList).distinct.sort(_ < _)
+      val includes: List[String] = (sourceFileNames ::: ( xml \\ "Compile").map(x => (x \ "@Include").text).toList).distinct.sortWith(_ < _)
       includes map (x => <Compile Include={x}/>)
     }
     val toolsVersion = (xml \ "@ToolsVersion").text

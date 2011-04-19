@@ -15,7 +15,7 @@ import msl.Context
 class FlagsGen(flags: Flags) extends Generator with CommonNet {
   lazy val namespace = List(Context.netUtility, "Enumerations").mkString(".")
 
-  lazy val filepath = List(Context.netPath, Context.netUtility, "Enumerations").mkString("/")
+  lazy val filePath = List(Context.netPath, Context.netUtility, "Enumerations").mkString("/")
 
   lazy val filename = flags.name + ".cs"
 
@@ -29,6 +29,9 @@ using System.Text;
 
 namespace """ + namespace + """
 {
+    /// <summary>
+    ///
+    /// </summary>
     [Flags]
     public enum """ + flags.name + """
     {

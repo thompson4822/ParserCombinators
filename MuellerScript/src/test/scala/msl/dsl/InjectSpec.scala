@@ -6,7 +6,7 @@ import org.mockito.Mockito._
 import org.mockito.BDDMockito.{given => givenThat}
 import org.junit.Assert._
 import org.scalatest.{GivenWhenThen, BeforeAndAfterEach, FeatureSpec}
-import msl.dsl.Types._
+import msl.dsl._
 
 class InjectSpec extends FeatureSpec with GivenWhenThen with MockitoSugar
 with BeforeAndAfterEach with ShouldMatchers {

@@ -15,7 +15,7 @@ import msl.dsl.Types._
 class EnumGen(enum: Enum) extends Generator with CommonNet {
   lazy val namespace = List(Context.netUtility, "Enumerations").mkString(".")
 
-  lazy val filepath = List(Context.netPath, Context.netUtility, "Enumerations").mkString("/")
+  lazy val filePath = List(Context.netPath, Context.netUtility, "Enumerations").mkString("/")
 
   lazy val filename = enum.name + ".cs"
 
@@ -29,6 +29,9 @@ using System.Text;
 
 namespace """ + namespace + """
 {
+    /// <summary>
+    ///
+    /// </summary>
     public enum """ + enum.name + """
     {
 """ + enum.items.map(item => "        " + item.name + " = " + item.value).mkString("," + nl) + """

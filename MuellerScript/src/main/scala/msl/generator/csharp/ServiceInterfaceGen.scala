@@ -15,14 +15,14 @@ import msl.Context
 class ServiceInterfaceGen(service: Service) extends Generator with CommonNet{
   lazy val namespace = List(Context.netService, "Interfaces").mkString(".")
 
-  lazy val filepath = List(Context.netPath, Context.netService, "Interfaces").mkString("/")
+  lazy val filePath = List(Context.netPath, Context.netService, "Interfaces").mkString("/")
   lazy val filename = className + "_Gen.cs"
 
   lazy val className = "I" + service.name
 
   lazy val projectFileMapping = (Context.netService -> List("Interfaces", filename).mkString("\\"))
 
-  val methodSignatures = service.methods.map(m => "        " + m.cSharpSignature + ";").mkString(nl)
+  val methodSignatures = service.methods.map(m => List(methodDocumentation(m), "        " + m.cSharpSignature + ";").mkString(nl)).distinct.mkString(nl+nl)
 
   override def toString = generationNotice + """
 using System;
@@ -34,6 +34,7 @@ using Mueller.Han.Utility.Enumerations;
 using Mueller.Han.Dto;
 namespace """ + namespace + """
 {
+""" + interfaceDocumentation(service.name, docs = service.documentation) + """
     public partial interface """ + className + """
     {
 """ + methodSignatures + """

@@ -49,7 +49,7 @@ package """ + namespace + """
             return _VALUE_MAP;
         }
 
-        public static const ALL_VALUES:ArrayValue = [""" + items.map(e => constName(e.name)).mkString(", ") + """];
+        public static const ALL_VALUES:Array = [""" + items.map(e => constName(e.name)).mkString(", ") + """];
 
 """ + getByValue(name) + """
 

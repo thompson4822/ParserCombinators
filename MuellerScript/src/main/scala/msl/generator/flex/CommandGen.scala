@@ -18,7 +18,7 @@ class CommandGen(serviceName: String, method: Method, flexPackage: FlexPackage) 
 
   lazy val eventPackagePartial = List(Context.flexPackage(flexPackage), "events", method.name).mkString(".")
 
-  lazy val filepath = List(Context.flexPath(flexPackage), "commands").mkString("/")
+  lazy val filePath = List(Context.flexPath(flexPackage), "commands").mkString("/")
 
   lazy val filename = method.name + "Command.as"
 

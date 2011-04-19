@@ -2,7 +2,7 @@ package msl.generator.flex
 
 import msl.generator.Generator
 import msl.Context
-import msl.dsl.Types.{FlexPackage, Method, Command, Definition}
+import msl.dsl.Types.{FlexPackage, Method, Definition}
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,7 +15,7 @@ import msl.dsl.Types.{FlexPackage, Method, Command, Definition}
 class CommandResponseGen(method: Method, flexPackage: FlexPackage) extends Generator with CommonFlex {
   val namespace = List(Context.flexPackage(flexPackage), "events").mkString(".")
 
-  lazy val filepath = List(Context.flexPath(flexPackage), "events").mkString("/")
+  lazy val filePath = List(Context.flexPath(flexPackage), "events").mkString("/")
   lazy val filename = method.name + "Response.as"
 
   val flexType = method.returnType.forFlex

@@ -14,9 +14,8 @@ import dsl.Types._
 
 class FlexDtoGen(dto: Dto, flexPackage: FlexPackage) extends Generator with CommonFlex {
   val namespace = List(Context.flexPackage(flexPackage), "dtos").mkString(".")
-  //val namespace = List(Context.flexBasePackage, Context.flexPackage, "dtos").mkString(".")
 
-  lazy val filepath = List(Context.flexPath(flexPackage), "dtos").mkString("/")
+  lazy val filePath = List(Context.flexPath(flexPackage), "dtos").mkString("/")
 
   lazy val filename = dto.name + ".as"
 

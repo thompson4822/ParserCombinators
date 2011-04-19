@@ -1,7 +1,5 @@
 package msl.generator
 
-import msl.dsl.Types.Statement
-
 /**
  * Created by IntelliJ IDEA.
  * User: Steve
@@ -14,10 +12,10 @@ trait Generator {
   val nl = System.getProperty("line.separator")
   def namespace: String
   def filename: String
-  def filepath: String
+  def filePath: String
   def overwrite = true
 
-  def filePathName: String = List(filepath, filename).mkString("/")
+  def filePathName: String = List(filePath, filename).mkString("/")
 
   val generationNotice =
   """

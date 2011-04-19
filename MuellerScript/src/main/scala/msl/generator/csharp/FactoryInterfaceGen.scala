@@ -15,7 +15,7 @@ import msl.dsl.Types.Factory
 class FactoryInterfaceGen(factory: Factory) extends Generator with CommonNet{
   lazy val namespace = List(Context.netFactory, "Interfaces").mkString(".")
 
-  lazy val filepath = List(Context.netPath, Context.netFactory, "Interfaces").mkString("/")
+  lazy val filePath = List(Context.netPath, Context.netFactory, "Interfaces").mkString("/")
 
   lazy val filename = className + "_Gen.cs"
 
@@ -23,7 +23,7 @@ class FactoryInterfaceGen(factory: Factory) extends Generator with CommonNet{
 
   lazy val projectFileMapping = (Context.netFactory -> List("Interfaces", filename).mkString("\\"))
 
-  val methodSignatures = factory.methods.map(m => "        " + m.cSharpSignature + ";").mkString(nl)
+  val methodSignatures = factory.methods.map(m => List(methodDocumentation(m), "        " + m.cSharpSignature + ";").mkString(nl)).distinct.mkString(nl+nl)
 
   override def toString = generationNotice + """
 using System;
@@ -37,6 +37,7 @@ using Mueller.Han.Dao.Domain;
 
 namespace """ + namespace + """
 {
+""" + interfaceDocumentation(factory.name, docs = factory.documentation) + """
     public partial interface """ + className + """
     {
 """ + methodSignatures + """

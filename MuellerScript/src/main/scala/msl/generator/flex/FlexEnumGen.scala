@@ -16,7 +16,7 @@ class FlexEnumGen(enum: Enum, flexPackage: FlexPackage) extends Generator with C
   val namespace = List(Context.flexPackage(flexPackage), "enums").mkString(".")
   //val namespace = List(Context.flexBasePackage, Context.flexPackage, "dtos").mkString(".")
 
-  lazy val filepath = List(Context.flexPath(flexPackage), "enums").mkString("/")
+  lazy val filePath = List(Context.flexPath(flexPackage), "enums").mkString("/")
 
   lazy val filename = enum.name + ".as"
 

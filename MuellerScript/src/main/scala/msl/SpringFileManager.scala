@@ -23,14 +23,13 @@ class SpringFileManager(packageName: String, fileName: String) {
   val pathFileName = List(Context.netPath, packageName, fileName).mkString("/")
 
   private def fromFile(): Elem = {
-    //def normalize(s: String) = if(s.indexOf("<Project") > 0) s.dropWhile(_ != '<') else s
     val fileContent = Source.fromFile(pathFileName, "utf-8").getLines.filter(x => x.indexOf("""<?xml""") == -1).mkString(nl)
     XML.loadString(fileContent)
   }
 
   private def toFile(xml: Elem) = {
     val prettyPrinter = new PrettyPrinter(256, 2)
-    var string = """<?xml version="1.0" encoding="utf-8"?>""" + nl + prettyPrinter.format(xml)
+    val string = """<?xml version="1.0" encoding="utf-8"?>""" + nl + prettyPrinter.format(xml)
 
     val writer = new PrintWriter(new BufferedWriter(new FileWriter(pathFileName,false)));
     writer.print(string)
@@ -55,7 +54,11 @@ class SpringFileManager(packageName: String, fileName: String) {
       (oldNodes ++ newNodes).sortWith((x, y) => (x \ "@id").text < (y \ "@id").text)
     }
 
-    val optionalParts = List((xml \\ "provider").headOption, (xml \\ "attribute-driven").headOption).flatten
+    // My only question with the following is, what if there are several of any one of these optional pieces?
+    val optionalParts = List(
+      (xml \\ "provider").headOption,
+      (xml \\ "attribute-driven").headOption,
+      (xml \\ "alias").headOption).flatten
     val content = (xml \\ "description").head ++ optionalParts ++ objectSection
     toFile(Elem(prefix = null, label = "objects", attributes = scala.xml.Null, scope = xml.scope, content: _*))
   }

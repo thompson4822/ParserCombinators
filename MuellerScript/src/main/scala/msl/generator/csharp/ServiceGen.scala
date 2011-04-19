@@ -16,7 +16,7 @@ import msl.dsl.Types.{Method, Service}
 class ServiceGen(service: Service) extends Generator with CommonNet{
   lazy val namespace = Context.netService
 
-  lazy val filepath = List(Context.netPath, Context.netService).mkString("/")
+  lazy val filePath = List(Context.netPath, Context.netService).mkString("/")
   lazy val filename = service.name + "_Gen.cs"
 
   lazy val projectFileMapping = (namespace -> filename)
@@ -52,7 +52,7 @@ class ServiceGen(service: Service) extends Generator with CommonNet{
       actionMethod(m)
     else
       functionMethod(m)
-  }.mkString
+  }.distinct.mkString
 
   override def toString = generationNotice + """
 using System;
@@ -72,6 +72,9 @@ using Mueller.Han.Utility.Enumerations;
 
 namespace """ + namespace + """
 {
+    /// <summary>
+    ///
+    /// </summary>
     [RemotingService(""" + "\"" + service.name.unCapitalize + "\"" + """)]
     public partial class """ + service.name + """ : BaseService<""" + factoryInterfaceName + ", " + service.name + """>, I""" + service.name + """
     {

@@ -2,7 +2,7 @@ package msl
 package generator
 package csharp
 
-import dsl.Types.Factory
+import dsl.Types.{Dto, Factory}
 
 /**
  * Created by IntelliJ IDEA.
@@ -15,7 +15,7 @@ import dsl.Types.Factory
 class FactoryGen(factory: Factory) extends Generator with CommonNet{
   lazy val namespace = Context.netFactory
 
-  lazy val filepath = List(Context.netPath, Context.netFactory).mkString("/")
+  lazy val filePath = List(Context.netPath, Context.netFactory).mkString("/")
 
   lazy val filename = factory.name + "_Gen.cs"
 
@@ -34,6 +34,11 @@ class FactoryGen(factory: Factory) extends Generator with CommonNet{
     """
   ).mkString(nl)
 
+  def autoPocoDefinitions = {
+    val uniqueDtos = factory.methods.map(_.returnType.variableType).collect{case x: Dto => x}.distinct
+    uniqueDtos.map(dto => "            x.AddFromAssemblyContainingType<" + dto.name + ">();").mkString(nl)
+  }
+
   override def toString = generationNotice +
     """
 using Mueller.Han.Business.Interfaces;
@@ -46,11 +51,32 @@ using System.Linq;
 using Mueller.Han.Utility;
 using Mueller.Han.Utility.Enumerations;
 using Mueller.Han.Dao.Domain;
+using AutoPoco;
+using AutoPoco.Engine;
 
 namespace """ + namespace + """
 {
+    /// <summary>
+    ///
+    /// </summary>
     public partial class """ + factory.name + " : " + "I" + factory.name + """
     {
+        //public static IGenerationSession Session = Factory.CreateSession();
+        public IGenerationSession Session;
+
+        private static IGenerationSessionFactory Factory = AutoPocoContainer.Configure(x =>
+        {
+            x.Conventions(c =>
+            {
+                c.UseDefaultConventions();
+            });
+        });
+
+        public """ + factory.name + """()
+        {
+            Session = Factory.CreateSession();
+        }
+
 """ + dependencyDeclarations + """
 """ + dependencySetters + """
     }
