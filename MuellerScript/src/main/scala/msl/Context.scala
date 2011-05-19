@@ -29,11 +29,13 @@ object Context {
   private lazy val flexConsumerSrc = findProperty("flexConsumerSrc")
   private lazy val flexCommonSrc = findProperty("flexCommonSrc")
   private lazy val flexUtilitySrc = findProperty("flexUtilitySrc")
+  private lazy val flexInstallerSrc = findProperty("flexInstallerSrc")
   lazy val flexBasePackage = findProperty("flexBasePackage")
 
   lazy val netServiceConsumer = findProperty("netServiceConsumer")
   lazy val netServiceAdmin = findProperty("netServiceAdmin")
   lazy val netServiceCommon = findProperty("netServiceCommon")
+  lazy val netServiceInstaller = findProperty("netServiceInstaller")
   lazy val netFactory = findProperty("netFactory")
   lazy val netFactoryTest = findProperty("netFactoryTest")
   lazy val netDto = findProperty("netDto")
@@ -50,6 +52,8 @@ object Context {
       case NamespaceType.Common => netServiceCommon
       case NamespaceType.Consumer => netServiceConsumer
       case NamespaceType.Utility => netServiceAdmin
+      case NamespaceType.Installer => netServiceInstaller
+
     }
 
   lazy val flexBasePath = flexBasePackage.split('.').mkString("/")
@@ -72,16 +76,7 @@ object Context {
     case NamespaceType.Consumer => flexConsumerSrc
     case NamespaceType.Common => flexCommonSrc
     case NamespaceType.Utility => flexUtilitySrc
+    case NamespaceType.Installer => flexInstallerSrc
   }
 
-  /*
-  def setFlexContext(packageDef: FlexPackage) = {
-    flexProject = packageDef.namespace match {
-      case NamespaceType.Consumer => flexConsumerSrc
-      case NamespaceType.Common => flexCommonSrc
-      case NamespaceType.Utility => flexUtilitySrc
-    }
-    flexPackage = packageDef.name
-  }
-  */
 }

@@ -23,9 +23,6 @@ object Types {
   }
 
   case class DataSource(name: String, arguments: String="()") extends Statement
-  {
-
-  }
 
   class DtoDefinition(override val name: String, override val definitionType: DefinitionType, val dataSource: Option[DataSource] = None) extends Definition(name, definitionType) {}
 
@@ -37,7 +34,7 @@ object Types {
   case class Primitive(name: String, isNullable: Boolean = false, isArray: Boolean = false) extends Statement with Type {
     object TypeMappings {
       val mappings = PropertiesFileManager.read("msltypes.properties") match {
-        case None => error("Can't find the file 'msltypes.properties' or it has no definitions")
+        case None => sys.error("Can't find the file 'msltypes.properties' or it has no definitions")
         case Some(map: Map[String,String]) => map
       }
     }
@@ -113,5 +110,6 @@ object Types {
     val Common = Value("Common")
     val Consumer = Value("Consumer")
     val Utility = Value("Utility")
+    val Installer = Value("Installer")
   }
 }

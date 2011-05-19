@@ -20,9 +20,9 @@ class FlexFlagsGen(flags: Flags, flexPackage: FlexPackage) extends Generator wit
   lazy val filename = flags.name + ".as"
 
   def getByValue(name: String) = """
-        public static function getByValue(value:Object):ArrayValue
+        public static function getByValue(value:int):Array
         {
-            var result:ArrayValue = new ArrayValue();
+            var result:Array = new Array();
             for each(var item:""" + name + """ in VALUE_MAP)
             {
                 if(value & (item.value) != 0)

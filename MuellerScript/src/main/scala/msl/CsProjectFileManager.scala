@@ -3,6 +3,7 @@ package msl
 import io.Source
 import java.io.{PrintWriter, BufferedWriter, FileWriter}
 import scala.xml._
+import annotation.tailrec
 
 /**
  * Created by IntelliJ IDEA.

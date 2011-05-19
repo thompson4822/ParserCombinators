@@ -1,9 +1,12 @@
 package msl.dsl
 
 import util.parsing.combinator.RegexParsers
-import Types._
 import msl.Context._
 import msl.GenerationManager
+import annotation.tailrec
+import msl.dsl.Types._
+import javax.management.remote.rmi._RMIConnection_Stub
+import com.sun.org.apache.xml.internal.utils.NameSpace
 
 /**
  * Created by IntelliJ IDEA.
@@ -47,6 +50,7 @@ class MslParser extends RegexParsers {
 
     // Redo as a shift expression!
     def fromHex: Int = {
+      @tailrec
       def fromHexRec(value: Int, remainder: List[Char]): Int = remainder match {
         case Nil => value
         case x :: rest =>
@@ -82,7 +86,8 @@ class MslParser extends RegexParsers {
   lazy val packageType: Parser[String=>FlexPackage] =
     "Common" ^^^ { FlexPackage(_: String, NamespaceType.Common) } |
     "Utility" ^^^ { FlexPackage(_: String, NamespaceType.Utility) } |
-    "Consumer" ^^^ { FlexPackage(_: String, NamespaceType.Consumer) }
+    "Consumer" ^^^ { FlexPackage(_: String, NamespaceType.Consumer) } |
+    "Installer" ^^^ { FlexPackage(_: String, NamespaceType.Installer)}
 
   lazy val codeComment = nDocComment ^^ { case nDocComment(c) => c }
 
@@ -93,9 +98,9 @@ class MslParser extends RegexParsers {
     result
   }
 
-  lazy val dto = opt(codeComment) ~ dtoIdent ~ flexPackage ~ dtoBody ^^ {
+  lazy val dto = opt(codeComment) ~ dtoIdent ~ opt(flexPackage) ~ dtoBody ^^ {
     case comment ~ name ~ packageDef ~ defs =>
-    val result = Dto(name, Some(packageDef), defs, comment)
+    val result = Dto(name, packageDef, defs, comment)
     elements.update(name, result)
     result
   }
@@ -123,16 +128,16 @@ class MslParser extends RegexParsers {
 
   lazy val methodBody: Parser[List[Method]] = "{" ~> rep(method) <~ "}" ^^ { case methods => methods.flatten }
 
-  lazy val enum = enumIdent ~ flexPackage ~ enumBody ^^ {
+  lazy val enum = enumIdent ~ opt(flexPackage) ~ enumBody ^^ {
     case name ~ namespace ~ items =>
-      val result = Enum(name, Some(namespace), items)
+      val result = Enum(name, namespace, items)
       elements(name) = result
       result
   }
 
-  lazy val flags = flagsIdent ~ flexPackage ~ flagsBody ^^ {
+  lazy val flags = flagsIdent ~ opt(flexPackage) ~ flagsBody ^^ {
     case name ~ namespace ~ items =>
-      val result = Flags(name, Some(namespace), items)
+      val result = Flags(name, namespace, items)
       elements(name) = result
       result
   }
@@ -170,11 +175,6 @@ class MslParser extends RegexParsers {
     binaryValue ^^ { case binaryValue(v) => v.fromBinary } |
     intValue ^^ { case intValue(v) => v.toInt }
 
-
-  lazy val namespace: Parser[NamespaceType.Value] =
-    "[" ~> ("Common" ^^^ { NamespaceType.Common } |
-    "Utility" ^^^ { NamespaceType.Utility } |
-    "Consumer" ^^^ { NamespaceType.Consumer} ) <~ "]"
 
   lazy val method: Parser[Option[Method]] =
     comment ^^^ { None } |
@@ -239,7 +239,7 @@ class MslParser extends RegexParsers {
         case Some(value: Type) => value
         case _ =>
           println("ERROR: The identifier '" + elementName + "' encountered in file " + GenerationManager.currentFile + " is never actually defined.")
-          exit(1)
+          sys.exit(1)
       }
     }
   }

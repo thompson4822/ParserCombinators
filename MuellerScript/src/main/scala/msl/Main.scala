@@ -1,8 +1,8 @@
 package msl
 
 import generator.Generator
-import msl.dsl.MslParser
-import msl.dsl.Types._
+import dsl._
+import Types._
 import generator.csharp._
 import generator.flex._
 import java.io._
@@ -39,7 +39,7 @@ java -jar <JARFILE NAME> <SCRIPT NAME>
 where JARFILE NAME is the filename of the msl tool, and SCRIPT NAME is the
 name of the script that instructs the tool on what files to generate.
     """)
-    exit(1)
+    sys.exit(1)
   }
 
   private def updateSpringFiles: Unit = {
@@ -122,7 +122,7 @@ object GenerationManager {
     val m = new MslParser
     m.parseAll(m.statements, input) match {
       case m.Success(result, _) => result
-      case other => error("Produced unexpected result: " + other.toString)
+      case other => sys.error("Produced unexpected result: " + other.toString)
     }
   }
 
@@ -149,30 +149,31 @@ object GenerationManager {
       save(new FactoryClass(factory))
       save(new FactoryTestClass(factory))
     }
-    case d @ Dto(name, Some(namespace), definitions, _) => {
+    case d @ Dto(name, namespace, definitions, _) => {
       save(new DataSourceGen(d))
       save(new DtoGen(d))
-      save(new FlexDtoGen(d, namespace))
+      namespace.map(nspace => save(new FlexDtoGen(d, nspace)))
     }
     case d: Dao => {
       save(new DaoGen(d))
       save(new DaoClassMaker(d))
       save(new DaoInterfaceGen(d))
     }
-    case e @ Enum(_, Some(namespace), _, _) => {
-      save(new FlexEnumGen(e, namespace))
+    case e @ Enum(_, namespace, _, _) => {
       save(new EnumGen(e))
+      namespace.map(nspace => save(new FlexEnumGen(e, nspace)))
     }
-    case f @ Flags(_, Some(namespace), _, _) => {
-      save(new FlexFlagsGen(f, namespace))
+    case f @ Flags(_, namespace, _, _) => {
       save(new FlagsGen(f))
+      namespace.map(nspace => save(new FlexFlagsGen(f, nspace)))
     }
-    case other => error("I don't know how to generate " + other + " yet!")
+    case other => sys.error("I don't know how to generate " + other + " yet!")
   }
 
   private def save(g: Generator) = {
     // Make sure the path exists
     (new File(g.filePath)).mkdirs
+
     // Save the file
     if(shouldSave(g)) {
       println("Writing: " + g.filePathName)

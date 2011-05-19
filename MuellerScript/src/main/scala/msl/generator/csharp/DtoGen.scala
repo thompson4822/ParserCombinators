@@ -38,7 +38,7 @@ using Mueller.Han.Utility.Enumerations;
 namespace """ + namespace + """
 {
     /// <summary>
-    ///
+    ///   <para> <c>""" + dto.name + """</c> </para>
     /// </summary>
     public class """ + dto.name + """
     {
