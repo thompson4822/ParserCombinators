@@ -12,7 +12,7 @@ import dsl.Types.{Method, Factory}
  * To change this template use File | Settings | File Templates.
  */
 
-class FactoryTestInterfaceGen(factory: Factory) extends Generator with CommonNet {
+class FactoryTestInterfaceGen(factory: Factory) extends Generator with TestMethodDiscriminator with CommonNet {
   lazy val namespace = List(Context.netFactoryTest, "Interfaces").mkString(".")
 
   lazy val filePath = List(Context.netPath, Context.netFactoryTest, "Interfaces").mkString("/")
@@ -23,17 +23,7 @@ class FactoryTestInterfaceGen(factory: Factory) extends Generator with CommonNet
 
   lazy val projectFileMapping = (Context.netFactoryTest -> List("Interfaces", filename).mkString("\\"))
 
-  val methodInterfaces = {
-    // Because method names can be the same, we may need to discriminate
-    def adjustedName(method: Method): String = {
-      val methodsNamedTheSame = factory.methods.filter(_.name == method.name)
-      (methodsNamedTheSame.length, methodsNamedTheSame.indexOf(method)) match {
-        case (x, y) if(x > 1 && y > 0) => method.name + y
-        case _ => method.name
-      }
-    }
-    factory.methods.map(m => "        void Test" + adjustedName(m) + "();").mkString(nl)
-  }
+  def methods: List[Method] = factory.methods
 
   override def toString = generationNotice + """
 using System;

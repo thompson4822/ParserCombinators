@@ -8,8 +8,10 @@ package msl.generator.csharp
 import msl._
 import generator.Generator
 import msl.dsl.Types._
+import javax.swing.UIDefaults.LazyInputMap
 
-class FactoryTestClass(factory: Factory) extends Generator with CommonNet{
+class FactoryTestClass(val factory: Factory) extends Generator with TestMethodDiscriminator with CommonNet {
+
   lazy val namespace = Context.netFactoryTest
 
   lazy val filePath = List(Context.netPath, Context.netFactoryTest).mkString("/")
@@ -18,26 +20,9 @@ class FactoryTestClass(factory: Factory) extends Generator with CommonNet{
 
   lazy val projectFileMapping = (namespace -> filename)
 
-  override def overwrite = false
+  def methods: List[Method] = factory.methods
 
-  val methodDefinitions = {
-    // Because method names can be the same, we may need to discriminate
-    def adjustedName(method: Method): String = {
-      val methodsNamedTheSame = factory.methods.filter(_.name == method.name)
-      (methodsNamedTheSame.length, methodsNamedTheSame.indexOf(method)) match {
-        case (x, y) if(x > 1 && y > 0) => method.name + y
-        case _ => method.name
-      }
-    }
-    factory.methods.map(m =>
-      """
-        [TestMethod]
-        public void Test""" + adjustedName(m) + """()
-        {
-            throw new NotImplementedException();
-        }
-      """).mkString
-  }
+  override def overwrite = false
 
   override def toString = """
 using System;
