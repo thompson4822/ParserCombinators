@@ -42,6 +42,11 @@ object Context {
   lazy val netDao = findProperty("netDao")
   lazy val netUtility = findProperty("netUtility")
 
+  lazy val flexConsumerBasePackage = findProperty("flexConsumerBasePackage")
+  lazy val flexCommonBasePackage = findProperty("flexCommonBasePackage")
+  lazy val flexUtilityBasePackage = findProperty("flexUtilityBasePackage")
+  lazy val flexInstallerBasePackage = findProperty("flexInstallerBasePackage")
+
   // Will be netServiceConsumer, netServiceCommon, or netServiceAdmin
   var netService: String = _
 
