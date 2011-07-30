@@ -1,0 +1,136 @@
+/*
+	Rough outline of scripting language syntax.
+*/
+
+projectBase = "c:\projects\mango"
+flexBase = "c:\flex\myFrontEnd"
+
+/*
+	Creates the following files: 
+	- ICustomerDeviceService with a definition for GetCustomers and GetDevicesForCustomer
+	- CustomerDeviceService (partial class) with dependency definitions for both ICustomerFactory and IDeviceFactory
+	- ICustomerFactory (if it doesn't exist) with a definition for GetCustomers
+	- IDeviceFactory (if it doesn't exist) with a definition for GetDevicesForCustomer
+	
+	In addition, SpringFactory.xml will be modified. 
+*/
+service CustomerDevice {
+	List<CustomerDto> GetCustomers() uses factory Customer
+    List<DeviceDto> GetDevicesForCustomer(CustomerDto customer) uses factory Device
+}
+
+/*
+	Creates the following files:
+	- GetDevicesForCustomerCommand
+	- GetDevicesForCustomerEvent, with field and getter for customer if CustomerDevice.GetDevicesForCustomer has been defined as above.  
+	  Otherwise will not generate any fields/getters.
+	- GetDevicesForCustomerResponse, with a ArrayCollection representing DeviceDtos if CustomerDevice.GetDevicesForCustomer has been defined 
+	  as above.  Otherwise will not add anything to the response.
+	- DeviceDto with the same fields as in the DTO defined above, or empty if no DTO defined.
+*/
+command GetDevicesForCustomer uses service CustomerDeviceService
+
+/*
+	Arrgh!  This stuff is hard to think about.  So here goes:
+	- If I parse the CustomerDevice section, I see that it has no Injections.  Further, I see that it has these two Methods
+		1) List<CustomerDto> GetCustomers() uses factory CustomerFactory
+		2) List<DeviceDto> GetDevicesForCustomer(CustomerDto customer) uses factory Device
+	- For the first method, CustomerFactory needs to be resolved.  There is no Customer factory, so I do the following:
+		- Create a Factory called CustomerFactory
+		- Add to CustomerFactory the Method List<CustomerDto> GetCustomers()
+	- For the second method, DeviceFactory needs to be resolved.  So I do the following:
+		- Create a Factory called DeviceFactory
+		- Add to DeviceFactory the Method List<DeviceDto> GetDevicesForCustomer(CustomerDto customer)
+		
+	Some ideas
+	I think that simplification is in order.  The syntax that I've got is okay, but I'm starting to think that an overhaul is in order.  How about
+	the following:
+	
+	service CustomerDeviceService {
+		List<CustomerDto> GetCustomers() uses CustomerFactory
+		List<DeviceDto> GetDevicesForCustomer(CustomerDto customer) uses DeviceFactory
+	}
+	
+	command GetDevicesForCustomer uses CustomerDeviceService
+	
+	What I like about this:
+	- No more inferring names.  A full and unambiguous name has to always be specified.
+	- No more 'uses factory' or 'uses service'.  This means that in Context, there will only ever be a mapping of names to Statements, which is less
+	  strongly typed, but easier to deal with on the whole.  It also means that a method can always have a Statement dependency, which means that the way
+	  methods are parsed for various statement types are completely generic.
+	  
+	Further thoughts:
+	1) Get rid of command altogether.  If you've got a public interface for the service, you generate all of the Flex crap based on each member of that
+	   interface, such that the following would be created for service CustomerDeviceService:
+		- GetCustomersCommand.as, GetCustomersRequest.as, GetCustomersResponse.as
+		- GetDevicesForCustomerCommand.as, GetDevicesForCustomerRequest.as, GetDevicesForCustomerResponse.as
+	2) For now, just get the Service statement working.  Factory is interesting, but not central to establishing a good proof of concept. 
+	3) Get rid of uses altogether.  We already know that a method in the service by convention should map to a method of the same signature in the 
+	   factory.  'uses' doesn't help matters at all.
+		
+*/
+
+/*
+	MSL is now generating a bunch of code.  It only really knows of two things at the moment - factories and services, and it generates
+	all of the boilerplate for these things on the Flex and C# sides of the ledger.  The files aren't being written yet (next step
+	actually), but they are displaying correctly to the console.
+	
+	Next I may add enums and DTOs.  Enums would generate a file in both C# and Flex, as would DTOs.
+	
+	Before I get to these, here is what I have left to do:
+	1) Add locations to the context (should these be in a separate properties file?)
+	2) Make the app capable of saving files to the correct locations based on the above.
+	3) Be able to parse/modify services.xml
+	4) Be able to parse/modify csproj files
+*/
+
+/*
+	Just reasoned through what it would take to save the files.  I think an initial properties files is fine, and this is along the lines
+	of what it would contain:
+	
+	netSrc=c:/Projects/mango
+	flexConsumer=c:/Projects/mango/ConsumerPortal/src
+	flexUtility=c:/Projects/mango/UtilityPortal/src
+	
+	What we will need to do for now is assume the location of the base locations in Flex and C#.  In Flex it is typical to make sub-packages,
+	so I think that something like the following needs to be in the script:
+	
+	at flexConsumer.raviolishooter
+	
+	... statements here ...
+	
+	at flexUtility.meatballmaker
+	
+	... some more statements here ...
+
+	Will think about this syntax some more tonight.
+*/
+
+/*
+	Learned that the .Net services (for now) will be split into pieces (Consumer, Common, Admin).  In thinking about this, I came up with
+	the following:
+	
+		service[Common] DeviceRelayService {
+			...
+		}
+		
+		does this make sense?  Perhaps a dot notation would be better:
+		
+		service.Common DeviceRelayService {
+			...
+		}
+		
+	Just thought of something else as well.  I want to enforce naming conventions, so why even have the word service?  How about this:
+	
+		DeviceRelayService[Common] {
+			...
+		}
+		
+	For Flex, here is my current thinking:
+	
+		flex[Common]=ravioli
+		flex[Utility]=whoKnows
+		flex[Consumer]=whatWasThat
+	
+	I like that.  I think that it unifies a lot of what I have been thinking.
+*/

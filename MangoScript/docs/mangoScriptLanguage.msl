@@ -1,0 +1,95 @@
+/*
+	Rough outline of scripting language syntax.
+*/
+
+projectBase = "c:\projects\mango"
+flexBase = "c:\flex\myFrontEnd"
+
+// Generates the file DeviceType.
+enum DeviceType { Gas, Water, Electric, Solar, Thermal, Antigravity, Quantum }
+
+// Generates the file Customer.  Also creates a default Customer.hbm.xml file
+entity Customer { }
+
+// Generates the file Device with properties for the fields shown.  Also creates a default Device.hbm.xml file
+entity Device {
+	long id
+	string name
+	DeviceType type
+	string model
+	double cost
+}
+
+/*
+	Creates the class DeviceEntityMapper with functions to map an entity to a DTO as well as a 
+	function to map a DTO to an entity.  The behavior for each is as expected from the following
+*/
+mapping DeviceEntityDto(Device, DeviceDto) {
+	id    -> id
+	name  -> deviceName
+	type  -> deviceType
+	model -> type
+	cost  -> price
+}
+
+dto CustomerDto {
+
+}
+
+// Creates a Dto class with the following properties.
+dto DeviceDto {
+	long id
+	string deviceName
+	DeviceType deviceType
+	string type
+	double price
+}
+
+/*
+	Creates the following files:
+	- IGetCustomersFactory, with a definition for SomeMethod
+	- GetCustomersFactory (partial class) with a definition for BuilderFactory, PersonDao, and OtherFactory
+	- IOtherFactory (if it doesn't exist)
+	- IBuilderFactory (if it doesn't exist)
+	- IPersonDao (if it doesn't exist)
+	- GetCustomersFactoryTests (partial class).  This includes the following:
+		- BuilderFactory mock
+		- PersonDao mock
+		- OtherFactory mock
+		- A test method called SomeMethodTest
+	
+	In addition, xml files for DI will be modified.
+*/
+factory GetCustomers {
+	inject factory Builder
+	inject dao Person
+	void SomeMethod(List<SomeDto>) uses factory Other
+}
+
+/*
+	Creates the following files: 
+	- ICustomerDeviceService with a definition for GetCustomers and GetDevicesForCustomer
+	- CustomerDeviceService (partial class) with dependency definitions for both ICustomerFactory and IDeviceFactory
+	- ICustomerFactory (if it doesn't exist) with a definition for GetCustomers
+	- IDeviceFactory (if it doesn't exist) with a definition for GetDevicesForCustomer
+	
+	In addition, SpringFactory.xml will be modified. 
+*/
+service CustomerDevice {
+	inject factory Customer
+	inject factory Device
+	List<CustomerDto> GetCustomers() uses factory Customer
+    List<DeviceDto> GetDevicesForCustomer(CustomerDto customer) uses factory Device
+}
+
+/*
+	Creates the following files:
+	- GetDevicesForCustomerCommand
+	- GetDevicesForCustomerEvent, with field and getter for customer if CustomerDevice.GetDevicesForCustomer has been defined as above.  
+	  Otherwise will not generate any fields/getters.
+	- GetDevicesForCustomerResponse, with a ArrayCollection representing DeviceDtos if CustomerDevice.GetDevicesForCustomer has been defined 
+	  as above.  Otherwise will not add anything to the response.
+	- DeviceDto with the same fields as in the DTO defined above, or empty if no DTO defined.
+*/
+command GetDevicesForCustomer uses service CustomerDevice
+

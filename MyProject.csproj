@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+        <PropertyGroup xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{10EDC238-C18B-4C91-B6D8-5C361A7BF963}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Mueller.Han.Business</RootNamespace>
+    <AssemblyName>Mueller.Han.Business</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup><PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup><PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+        <ItemGroup><Reference Include="AutoMapper, Version=1.1.0.188, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\automapper\AutoMapper.dll</HintPath>
+    </Reference><Reference Include="Iesi.Collections, Version=1.0.1.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\nhibernate\Iesi.Collections.dll</HintPath>
+    </Reference><Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\nhibernate\log4net.dll</HintPath>
+    </Reference><Reference Include="Mueller.Han.Dao, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Mueller.Han.Dao\bin\Debug\Mueller.Han.Dao.dll</HintPath>
+    </Reference><Reference Include="Mueller.Han.Dto, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Mueller.Han.Dto\bin\Debug\Mueller.Han.Dto.dll</HintPath>
+    </Reference><Reference Include="Mueller.Han.Utility, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Mueller.Han.Utility\bin\Debug\Mueller.Han.Utility.dll</HintPath>
+    </Reference><Reference Include="Spring.Core, Version=1.3.0.20349, Culture=neutral, PublicKeyToken=65e474d141e25e07, processorArchitecture=MSIL" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\spring\Spring.Core.dll</HintPath>
+    </Reference><Reference Include="Spring.Data, Version=1.3.0.20349, Culture=neutral, PublicKeyToken=65e474d141e25e07, processorArchitecture=MSIL" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\spring\Spring.Data.dll</HintPath>
+    </Reference><Reference Include="Spring.Web, Version=1.3.0.20349, Culture=neutral, PublicKeyToken=65e474d141e25e07, processorArchitecture=MSIL" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\spring\Spring.Web.dll</HintPath>
+    </Reference><Reference Include="System" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns="http://schemas.microsoft.com/developer/msbuild/2003"></Reference><Reference Include="System.Core" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference><Reference Include="System.Xml.Linq" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference><Reference Include="System.Data.DataSetExtensions" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference><Reference Include="System.Data" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns="http://schemas.microsoft.com/developer/msbuild/2003"></Reference><Reference Include="System.Xml" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns="http://schemas.microsoft.com/developer/msbuild/2003"></Reference></ItemGroup>
+        <ItemGroup><Compile Include="Garbage.cs"></Compile><Compile Include="Trash.cs"></Compile><Compile Include="Crap.cs"></Compile><Compile Include="AdminFactory.cs"></Compile><Compile Include="BridgeAlertReportHandler.cs"></Compile><Compile Include="BridgeMessageBaseHandler.cs"></Compile><Compile Include="BridgeStatusReportHandler.cs"></Compile><Compile Include="CustomerAdministrationFactory.cs"></Compile><Compile Include="CustomerFactory.cs"></Compile><Compile Include="DeviceTypeResolver.cs"></Compile><Compile Include="Converters\EmptyStringToNullConverter.cs"></Compile><Compile Include="HanProgramFactory.cs"></Compile><Compile Include="HanProgramFactory_Gen.cs"></Compile><Compile Include="IncomingMessageHandlerFactory.cs"></Compile><Compile Include="Interfaces\IAdminFactory.cs"></Compile><Compile Include="Interfaces\IBridgeMessageHandler.cs"></Compile><Compile Include="Interfaces\ICustomerAdministrationFactory.cs"></Compile><Compile Include="Interfaces\ICustomerFactory.cs"></Compile><Compile Include="Interfaces\IHanProgramFactory_Gen.cs"></Compile><Compile Include="Interfaces\IIncomingMessageHandlerFactory.cs"></Compile><Compile Include="Interfaces\INotificationFactory.cs"></Compile><Compile Include="Interfaces\IParticipationFactory_Gen.cs"></Compile><Compile Include="Interfaces\IUpdateHanFactory_Gen.cs"></Compile><Compile Include="Interfaces\IWorkOrderFactory_Gen.cs"></Compile><Compile Include="InvalidMessageHandler.cs"></Compile><Compile Include="MiHanMessageFactory.cs"></Compile><Compile Include="BillingPlanFactory.cs"></Compile><Compile Include="CustomerBudgetFactory.cs"></Compile><Compile Include="CustomerDemandRequestEventFactory.cs"></Compile><Compile Include="CustomerDemandResponseEventFactory.cs"></Compile><Compile Include="CustomerRegistrationFactory.cs"></Compile><Compile Include="CustomerSettingsFactory.cs"></Compile><Compile Include="DemandResponseEventFactory.cs"></Compile><Compile Include="ExternalCommunicationFactory.cs"></Compile><Compile Include="Interfaces\IMiHanMessageFactory.cs"></Compile><Compile Include="Interfaces\IBillingPlanFactory.cs"></Compile><Compile Include="Interfaces\ICustomerBudgetFactory.cs"></Compile><Compile Include="Interfaces\ICustomerDemandRequestEventFactory.cs"></Compile><Compile Include="Interfaces\ICustomerDemandResponseEventFactory.cs"></Compile><Compile Include="Interfaces\ICustomerRegistrationFactory.cs"></Compile><Compile Include="Interfaces\ICustomerSettingsFactory.cs"></Compile><Compile Include="Interfaces\IDemandResponseEventFactory.cs"></Compile><Compile Include="Interfaces\IExternalCommunicationFactory.cs"></Compile><Compile Include="Interfaces\IMeterReadingsFactory.cs"></Compile><Compile Include="Interfaces\INewCustomerDemandResponseEventFactory.cs"></Compile><Compile Include="Interfaces\ICalculatedTemperatureFactory.cs"></Compile><Compile Include="Interfaces\IPortalConfigurationFactory.cs"></Compile><Compile Include="Interfaces\IPricingEngine.cs"></Compile><Compile Include="MeterReadingsFactory.cs"></Compile><Compile Include="NewCustomerDemandResponseEventFactory.cs"></Compile><Compile Include="CalculatedTemperatureFactory.cs"></Compile><Compile Include="Converters\NullDateTimeConverter.cs"></Compile><Compile Include="Converters\NullDateTimeOffsetConverter.cs"></Compile><Compile Include="NotificationFactory.cs"></Compile><Compile Include="ParticipationFactory.cs"></Compile><Compile Include="ParticipationFactory_Gen.cs"></Compile><Compile Include="PasswordHelper.cs"></Compile><Compile Include="PortalConfigurationFactory.cs"></Compile><Compile Include="Properties\AssemblyInfo.cs"></Compile><Compile Include="PricingEngine.cs"></Compile><Compile Include="TimezoneHelper.cs"></Compile><Compile Include="Transformations.cs"></Compile><Compile Include="UpdateHanFactory.cs"></Compile><Compile Include="UpdateHanFactory_Gen.cs"></Compile><Compile Include="WorkOrderFactory.cs"></Compile><Compile Include="WorkOrderFactory_Gen.cs"></Compile></ItemGroup>
+        <ItemGroup><ProjectReference Include="..\ArkionBridgeMessages\Mueller.Han.ArkionBridgeMessages.csproj" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+      <Project>{ECC3ACA8-189A-4CC6-8390-77CE37D4B1EF}</Project>
+      <Name>Mueller.Han.ArkionBridgeMessages</Name>
+    </ProjectReference><ProjectReference Include="..\Mueller.Han.ArkDevTransport\Mueller.Han.ArkDevTransport.csproj" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+      <Project>{C4685057-4059-4168-AB3A-3204588570A7}</Project>
+      <Name>Mueller.Han.ArkDevTransport</Name>
+    </ProjectReference></ItemGroup>
+        <ItemGroup><EmbeddedResource Include="Business.xml" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns="http://schemas.microsoft.com/developer/msbuild/2003"></EmbeddedResource></ItemGroup>
+        <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" xmlns="http://schemas.microsoft.com/developer/msbuild/2003"></Import>
+        
+      </Project>

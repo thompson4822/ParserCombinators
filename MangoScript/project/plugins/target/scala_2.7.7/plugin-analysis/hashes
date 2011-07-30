@@ -1,0 +1,4 @@
+#Source Hashes
+#Fri Apr 29 07:37:55 MDT 2011
+src_managed\\assembly-sbt-0.1.1\\assembly\\AssemblyBuilder.scala=9f29468f0f310c17079411877d0e313441425e3e
+src_managed\\sbt-proguard-plugin-0.0.5\\ProguardProject.scala=73afff19f938fb89a8749bf7c93f50af3cbb906c

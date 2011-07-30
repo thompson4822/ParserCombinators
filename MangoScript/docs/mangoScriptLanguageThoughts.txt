@@ -1,0 +1,98 @@
+Problem:
+In my scripting language, a script could consist of just the following line:
+
+	command GetDevicesForCustomer uses service CustomerDevice
+
+This will actually create a number of things, but when parsed we at least need to have a Command.  So let's say that we create this
+type with the following signature:
+
+	Command(name = "GetDevicesForCustomerCommand", service = Service("CustomerDeviceService"))
+
+The problem is that the CustomerDeviceService is not really visible beyond this line.  And so if we expand our script such that it
+now reads like so:
+
+	command GetDevicesForCustomer uses service CustomerDevice
+	command GetDeviceCommandsForCustomer uses service CustomerDevice
+
+We now have the following:
+
+	Command(name = "GetDevicesForCustomerCommand", service = Service("CustomerDeviceService"))
+	Command(name = "GetDeviceCommandsForCustomerCommand", service = Service("CustomerDeviceService"))
+
+This suggests a simple solution - creation of a top level services map, like so:
+
+	val services = Map("CustomerDeviceService" -> Service("CustomerDeviceService"), "OtherService" -> Service("OtherService"))
+
+and a lookup when creating the two commands, where creation of the first command would create the Service and add it to the map, 
+while the creation of the second command would find the service and just reference it.
+
+There are some complications of course.  The commands as we've defined them for the scripting language have some implicit 
+assumptions.  For instance, the CustomerDeviceService will be created to have two methods: GetDevicesForCustomer and 
+GetDeviceCommandsForCustomer.  Still not a big deal - in the Service class there can be a map of methods.
+
+Okay, lets throw in an extra wrinkle.  One of the things that could really make the script language nice is if we were able to define
+the Service on its own.  Maybe like so:
+
+	service CustomerDevice {
+		List<CustomerDto> GetCustomers()
+	}
+
+	command GetDevicesForCustomer uses service CustomerDevice
+	command GetDeviceCommandsForCustomer uses service CustomerDevice
+
+Now in the mapping of services, CustomerDevice exists in advance of the commands and is presumably just added to the map, and so both 
+commands just perform a lookup.  This is pretty straight forward.
+
+Let's scramble the order of things a bit and see how that effects us:
+
+	command GetDevicesForCustomer uses service CustomerDevice
+	command GetDeviceCommandsForCustomer uses service CustomerDevice
+
+	service CustomerDevice {
+		List<CustomerDto> GetCustomers()
+	}
+
+Okay, things aren't as straight forward in this model.  Now the command GetDevicesForCustomer is creating a service mapping as it did in
+earlier examples.  Both the commands use this mapping.  When we create the service, presumably it would want to add itself to the service
+mapping, but since there is already a CustomerDeviceService, things are complicated.  Does the newly minted service just transfer its state
+to the version in the map and die?
+
+This is the complication of forward references, and my thinking on it is that since I'm using a language with functional capabilities like
+Scala I should be able to attack this in a more elegant way.  Lets explore what would happen if higher order functions were used for the 
+Command class:
+
+	case class Command(name: String, service: (Map[String, Service]) => Service) {
+			
+	}
+		
+The advantage in this approach is that the lookup of the service could be done at a later time.  Here is how this might look in the parser:
+
+	lazy val command = "command" ~> identifier ~ serviceDecl = {
+		case name ~ service = Command(name, { m => m(serviceDecl).getOrElseUpdate(m(serviceDecl), new Service(serviceDecl)) }
+	}
+	
+-----------------------------------------	
+UPDATE
+-----------------------------------------
+
+I just implemented something along the lines discussed above but ran into an obvious gotcha - my tests can no longer match against something
+simple like the following:
+
+	Command("GetDevicesForCustomerCommand", Service("CustomerDeviceService", Nil, Nil))
+	
+I don't think there is an implicit that I could use to convert from 
+
+	Command(String, (HashMap[String,Service])=>Service) 
+	
+to
+
+	Command(String, Service)
+	
+though this would be really nice.  Maybe I need to look into what it would take to add an unapply to my case class?
+
+-----------------------------------------	
+UPDATE
+-----------------------------------------
+
+Okay, I'm now thinking that maybe I should forego case classes altogether.  I like the extractor idea, and if I'm going to pursue it, then
+case classes aren't really necessary for what I want to do (at least I don't think they are).  Will look into taking this approach.

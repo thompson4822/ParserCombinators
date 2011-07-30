@@ -1,0 +1,37 @@
+#Source Hashes
+#Mon May 23 06:25:51 MDT 2011
+src\\main\\scala\\msl\\SpringFileManager.scala=5c934f98d9e8aaeef34fb5f4463cf363f77b4b56
+src\\main\\scala\\msl\\generator\\csharp\\FactoryTestClass.scala=58711d2b260e2170506a1fe5d85e2135e2e7b569
+src\\main\\scala\\msl\\generator\\csharp\\CommonNet.scala=e641e21f04c1135ef876c73cfb0fc79494b950d5
+src\\main\\scala\\msl\\generator\\csharp\\DtoGen.scala=e46bb433d6c19d4cff0ad3a46ac95c5245bd5b60
+src\\main\\scala\\msl\\generator\\csharp\\DaoGen.scala=1d6f69480acc42c48bb4a2e1429b572c76046baa
+src\\main\\scala\\msl\\generator\\flex\\CommonFlex.scala=48016d2d9f58f055cc61a23bddfea75e8a719834
+src\\main\\scala\\msl\\Main.scala=1eff447aa8d191468a92d75251ff0c477f23fc8b
+src\\main\\scala\\msl\\generator\\csharp\\SummaryTextParser.scala=dea415cd0738f76e86dccc6a1557bb575d4fce4f
+src\\main\\scala\\msl\\generator\\csharp\\FactoryGen.scala=6e8223144bb1ea5e6eefb2b7cb0be83b9dd91ac2
+src\\main\\scala\\msl\\dsl\\MslParser.scala=d115a90df300ab4b4cfb98e3a52630fa60d6ab94
+src\\main\\scala\\msl\\generator\\package.scala=8f37df39f4563b0b6c7dc817e57de3c98d2cf8ce
+src\\main\\scala\\msl\\PropertiesFileManager.scala=1abf610d1f263002617f348c2d681430e5c3e68a
+src\\main\\scala\\msl\\generator\\flex\\FlexDtoGen.scala=c829f9a7c79f1f86f74feea687e6b488ca4e517e
+src\\main\\scala\\msl\\generator\\flex\\CommandGen.scala=fe3273dcb34c71d20613c5f5e3013937469ad535
+src\\main\\scala\\msl\\generator\\csharp\\FactoryTestGen.scala=0ba0ded2fd6d657bcf3c86f06b9625d713ec402a
+src\\main\\scala\\msl\\generator\\csharp\\DaoClassMaker.scala=c7ca04ce3ec2d0d32f88b3c1b2a05e1532560f15
+src\\main\\scala\\msl\\generator\\csharp\\FlagsGen.scala=5717719771e8ea146d17acbd2a00f3e550b4dcc1
+src\\main\\scala\\msl\\generator\\flex\\FlexEnumGen.scala=73c76676cef7b6a67ee406fadbb426502ce1d8ce
+src\\main\\scala\\msl\\Context.scala=0bbe34751e146b61e80dcf290cc55374df4ea37f
+src\\main\\scala\\msl\\generator\\Generator.scala=056b7800128aeaea7ded2d9a1a5d5a97874b93d5
+src\\main\\scala\\msl\\generator\\flex\\CommandResponseGen.scala=b295184e25452ee383d03e853f45ccb3a8bd83eb
+src\\main\\scala\\msl\\generator\\flex\\FlexFlagsGen.scala=ec5270fc3107304081c62a546a31a0391c4d27fd
+src\\main\\scala\\msl\\generator\\csharp\\FactoryClass.scala=71a0dbd45850d9ca22a32549a5d0463c872a777d
+src\\main\\scala\\msl\\generator\\csharp\\DataSourceGen.scala=3c2256c12a3e65bf55c3d3f90c8b2f07f084f827
+src\\main\\scala\\msl\\CsProjectFileManager.scala=bc0f856432a95069e24840629d8e953ff6954abe
+src\\main\\scala\\msl\\generator\\csharp\\FactoryInterfaceGen.scala=cb96341ca52ccfa82e38c6c8c585cacb9576b36e
+src\\main\\scala\\msl\\generator\\csharp\\FactoryTestInterfaceGen.scala=e902ecd12365cb3b93a5525578bc03bb1989373f
+src\\main\\scala\\msl\\generator\\csharp\\DaoInterfaceGen.scala=6ccf6a7202662b7423bf92957236fcd887cce4c9
+src\\main\\scala\\msl\\dsl\\Types.scala=3a5b4f360458a26c3f482ae70d9e4dda98a37e51
+src\\main\\scala\\msl\\generator\\flex\\CommandRequestGen.scala=6595e9b97e353c66f8c60c495c2529bab4144e0f
+src\\main\\scala\\msl\\generator\\csharp\\ServiceGen.scala=8e71b3be4aba7441edba01640ab6c263236d6f8f
+src\\main\\scala\\msl\\generator\\csharp\\EnumGen.scala=aeeed5210e5c18992bd97fb337be83041042f2d6
+src\\main\\scala\\msl\\generator\\csharp\\ServiceInterfaceGen.scala=27dcf44d7ca02a7776d3be145d91657338def845
+src\\main\\scala\\msl\\generator\\flex\\CommonFlexEnum.scala=e1f5e68b68174eeba006eff18a19631bc4320ae0
+src\\main\\scala\\msl\\generator\\csharp\\TestMethodDiscriminator.scala=8e1bbd092e002e91af03a5ec652d33a46b467442

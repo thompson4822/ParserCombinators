@@ -1,0 +1,306 @@
+/*
+    Mueller Script vers 1.0
+    -----------------------
+    The purpose of this file is to demonstrate what Mueller Script (hereafter called MSL) is, why it was created, and
+    how you can use it.
+
+    Description
+    -----------
+    Ever looked at the code written from iteration to iteration and thought 'gee, this looks suspiciously the same as
+    what I did before'?  If you have you've probably divined that there are particular patterns that we follow in our
+    development of the Mueller project on practically all levels.
+
+    Now this is both good and bad.  Obviously, the more closely a project hews to patterns of construction, the easier
+    it becomes to read (wasn't this the central premise of the GOF book?).  Unfortunately, there is also a dark side to
+    these patterns in that they entail replicating a certain amount of boilerplate every time they are used.
+
+    MSL is designed to change all of that.  While it can't write business logic, it can alleviate some of the
+    redundancy that has gone into building code in both the .Net and Flex areas.
+
+    What is MSL?
+    ------------
+    MSL is a script language that describes in very simple terms the types of artifacts (files) that are to be
+    generated.  It looks an awful lot like C#, which should make it easy to read.
+
+    An MSL script must be accompanied by a properties file called msl.properties that contains information pertinent
+    to the developers set up.  This was done in anticipation of having the script possibly be version controlled
+    apart from the configuration for any one machine.
+*/
+
+/*
+    The Properties File
+    -------------------
+    The best way to demonstrate the properties file is to show the content of my own:
+
+        netSrc=c:/Projects/mueller-mihan
+        flexCommonSrc=c:/Projects/mueller-mihan/MiHan_FlexCommon/src
+        flexConsumerSrc=c:/Projects/mueller-mihan/MiHan_ConsumerPortal/src
+        flexUtilitySrc=c:/Projects/mueller-mihan/MiHan_UtilityPortal/src
+
+        netServiceConsumer=Mueller.Han.Service
+        netServiceAdmin=Mueller.Han.Service.Admin
+        netServiceCommon=Mueller.Han.Service.Admin.Common
+        netFactory=Mueller.Han.Business
+        netFactoryTest=Mueller.Han.Business.Test
+
+        flexBasePackage=com.mueller.mihan
+
+    All of the keys shown here must have definition.  Obviously the first 4 are the most likely to vary from one user
+    to another.  In future releases I might generalize the Flex source keys further to just define a common workspace.
+
+    Lets See Some Script Already
+    ----------------------------
+    In the following, we'll go ahead and start examining script code, explaining what it does as we go along.
+*/
+
+
+// This is a single line comment.
+
+/*
+    This is a multi line comment.
+
+    Comment limitations include:
+    - Both single and multi line comments can only currently be used at the top level (not inside of service/factory
+      declarations, which we'll look at next)
+    - Multi-line comments don't nest, so don't try this!
+*/
+
+// Let's declare a factory
+CustomerDeviceFactory { }
+
+/*
+    There are several things about this code to note:
+    1) Naming is important.  A factory definition must end with the word 'Factory'  This implies added consistency.
+    2) After the name there can be a factory body.  In this case the body is not defined.  Curly braces are required
+       in both cases.
+
+    Not surprisingly, this code doesn't really help too much.  Let's add some definition by uncommenting the following
+    and re-running the tool:
+*/
+
+/*
+CustomerDeviceFactory {
+    IList<Device> DevicesFor(string customerId, DeviceType deviceType)
+    string DeviceName(long deviceId, long customerId)
+    long DeviceId(string deviceName, long customerId)
+}
+*/
+
+/*
+    Again, there are some things to note:
+    1) Definitions look just like C# method signatures, except there is no ';'.  Convince me to add it and I will :)
+    2) Multiple declarations are cumulative, meaning that we could declare CustomerDeviceFactory ten times with
+       ten slightly different bodies, and the result would be a single CustomerDeviceFactory that amalgamated all the
+       body definitions
+
+    Now the CustomerDeviceFactory has enough definition to actually be interesting.  The following files with the
+    contents as shown would be generated for us:
+
+       [ICustomerDeviceFactory_Gen.cs]
+       using System;
+       using System.Collections.Generic;
+       using System.Linq;
+       using System.Text;
+       using Mueller.Han.Dto;
+       using Mueller.Han.Utility;
+
+       namespace Mueller.Han.Business.Interfaces
+       {
+           public partial interface ICustomerDeviceFactory
+           {
+               IList<Device> DevicesFor(string customerId, DeviceType deviceType);
+               string DeviceName(long deviceId, long customerId);
+               long DeviceId(string deviceName, long customerId);
+           }
+       }
+
+       [CustomerDeviceFactory_Gen.cs]
+       using Mueller.Han.Business.Interfaces;
+       using Mueller.Han.Dao;
+       using Mueller.Han.Dto;
+       using Spring.Transaction.Interceptor;
+       using System;
+       using System.Collections.Generic;
+
+       namespace Mueller.Han.Business
+       {
+           public partial class CustomerDeviceFactory : ICustomerDeviceFactory
+           {
+
+
+           }
+       }
+
+    Note that the CustomerDeviceFactory class is empty.  In the future it is likely that in this case, it will not be
+    generated at all, as the tool relies on the files it generates to not be edited.  That is to say that upon
+    regeneration, the tool will overwrite any file artifacts from previous runs.
+
+    One common thing that we as coders do when we write business logic is add dependencies.  This can be done by
+    uncommenting the following and re-running the tool:
+*/
+
+/*
+CustomerDeviceFactory {
+    inject ICustomerDao customerDao
+    inject IDeviceDao deviceDao
+    inject IDependencyOther dependencyOther
+}
+*/
+
+/*
+    Now the CustomerDeviceFactory_Gen.cs file contains some interesting content:
+
+        [CustomerDeviceFactory_Gen.cs]
+        using Mueller.Han.Business.Interfaces;
+        using Mueller.Han.Dao;
+        using Mueller.Han.Dto;
+        using Spring.Transaction.Interceptor;
+        using System;
+        using System.Collections.Generic;
+
+        namespace Mueller.Han.Business
+        {
+            public partial class CustomerDeviceFactory : ICustomerDeviceFactory
+            {
+                public ICustomerDao customerDao;
+                public IDeviceDao deviceDao;
+                public IDependencyOther dependencyOther;
+                public ICustomerDao CustomerDao { set; }
+                public IDeviceDao DeviceDao { set; }
+                public IDependencyOther DependencyOther { set; }
+            }
+        }
+
+    In time (perhaps the next release?) the Spring.Net xml files will be updated to handle the relationships between
+    this class and its dependencies automatically.
+
+    One of the things that we usually do at the factory level is unit testing.  Because this involves some basic mock
+    setup for dependencies, the following boilerplate is also generated:
+
+        [CustomerDeviceFactoryTests_Gen.cs]
+        using System;
+        using System.Text;
+        using System.Collections.Generic;
+        using System.Linq;
+        using Microsoft.VisualStudio.TestTools.UnitTesting;
+        using Mueller.Han.Dao;
+        using Moq;
+        using Mueller.Han.Dto;
+        using Mueller.Han.Dao.Domain;
+        using NHibernate.Criterion;
+        using System.Linq.Expressions;
+
+        namespace Mueller.Han.Business.Test
+        {
+            [TestClass]
+            public partial class CustomerDeviceFactoryTests : ICustomerDeviceFactoryTests
+            {
+                private CustomerDeviceFactory customerDeviceFactory;
+                private Mock<ICustomerDao> mockCustomerDao;
+                private Mock<IDeviceDao> mockDeviceDao;
+                private Mock<IDependencyOther> mockDependencyOther;
+
+                [TestInitialize()]
+                public partial void MyTestInitialize()
+                {
+                    customerDeviceFactory = new CustomerDeviceFactory();
+                    mockCustomerDao = new Mock<ICustomerDao>();
+                    mockDeviceDao = new Mock<IDeviceDao>();
+                    mockDependencyOther = new Mock<IDependencyOther>();
+                    customerDeviceFactory.CustomerDao = mockCustomerDao.Object;
+                    customerDeviceFactory.DeviceDao = mockDeviceDao.Object;
+                    customerDeviceFactory.DependencyOther = mockDependencyOther.Object;
+                }
+            }
+        }
+
+*/
+
+
+/*
+    Moving on from the factory, there is also the notion of service, but this concept touches upon the generation of
+    Flex code as well.  As this is the case, there is a mechanism for specifying how Flex code will be created, as
+    shown:
+*/
+
+flex[Utility]=customerDevice
+
+/*
+    There are some things to note in this declaration:
+    1) After the keyword 'flex', one of these namespaces must occur: Common, Consumer, or Utility (shown here).  This
+       is used with the information from the properties file to help determine where generated files will be created.
+    2) The right hand side of the declaration gives the package under which files will be created.
+
+    So, if the property for flexUtilitySrc was 'c:/Projects/mueller-mihan/MiHan_UtilityPortal/src' and the property for
+    flexBasePackage was 'com.mueller.mihan', files would be generated in subdirectories in the following location:
+
+        c:/Projects/mueller-mihan/MiHan_UtilityPortal/src/com/mueller/mihan/customerDevice
+
+    and the base package for these would be
+
+        com.mueller.mihan.customerDevice
+
+    In this particular release of MSL, there are no other declarations that have an explicit relation to Flex code.
+    All of the rest of the files generated are the result of declaring a service, like so:
+*/
+
+
+CustomerDeviceService[Utility] { }
+
+/*
+    It is no accident that the declaration of a service looks very similar to that of a factory.  Again, the name is
+    enforced for consistency (it has to end with the word 'Service') and such declarations are cumulative (many service
+    declarations with the same name can be given, resulting in a single service with the body of all declarations
+    combined).  Like the flex declaration that we just explored though, the service has to be parameterized by one of
+    the following values: Common, Consumer, or Utility (shown here).  Again, the implication is that if the property
+    netSrc is set to 'c:/Projects/mueller-mihan' and the property netServiceAdmin is set to Mueller.Han.Service.Admin,
+    the service relevant files will be generated under
+
+        c:/Projects/mueller-mihan/Mueller.Han.Service.Admin/
+
+    and the base package for these would be
+
+        Mueller.Han.Service.Admin
+
+    This declaration is not all that interesting.  Let's try harder by uncommenting the following and regenerating the
+    code:
+*/
+
+/*
+CustomerDeviceService[Utility] {
+    int GetDeviceType(long deviceId)
+    void SetDeviceType(long deviceId, int deviceType)
+}
+*/
+
+/*
+    Now we've got a lot going on, though our definition may not appear all that formidable.  Service does a lot of
+    magic, which makes it the most powerful aspect of MSL for code generation.  Let's break it down.
+
+    First, CustomerDeviceService (when parsed) will check to find out if a corresponding CustomerDeviceFactory has
+    been declared.  Earlier we did declare such a factory, and so the two method signatures are added to our
+    previous code, such that the factory interface files now look like so:
+
+       [ICustomerDeviceFactory_Gen.cs]
+       using System;
+       using System.Collections.Generic;
+       using System.Linq;
+       using System.Text;
+       using Mueller.Han.Dto;
+       using Mueller.Han.Utility;
+
+       namespace Mueller.Han.Business.Interfaces
+       {
+           public partial interface ICustomerDeviceFactory
+           {
+               IList<Device> DevicesFor(string customerId, DeviceType deviceType);
+               string DeviceName(long deviceId, long customerId);
+               long DeviceId(string deviceName, long customerId);
+               int GetDeviceType(long deviceId);
+               void SetDeviceType(long deviceId, int deviceType);
+           }
+       }
+
+
+*/
+
