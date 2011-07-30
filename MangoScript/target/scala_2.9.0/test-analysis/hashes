@@ -1,7 +1,0 @@
-#Source Hashes
-#Mon May 23 06:25:40 MDT 2011
-src\\test\\scala\\msl\\dsl\\ServiceSpec.scala=a6a99c215e937a3611c96395b4908296a9e31b67
-src\\test\\scala\\msl\\dsl\\EntitySpec.scala=12d2b33f0a310625062184b493f22582ced85f52
-src\\test\\scala\\msl\\dsl\\MethodSpec.scala=b1ea45f3734d0b13b90a31f141d09655e31ec3de
-src\\test\\scala\\msl\\dsl\\EnumSpec.scala=f55b5db4902816eb61eab5586750e18028bfe502
-src\\test\\scala\\msl\\dsl\\InjectSpec.scala=273ce5dd7a1e22503a7cd422935f77876fa81834

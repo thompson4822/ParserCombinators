@@ -1,7 +1,0 @@
-#External Dependencies
-#Fri Apr 29 07:37:55 MDT 2011
-C\:\\Users\\Steve\\IdeaProjects\\ParserCombinators\\MuellerScript\\project\\plugins\\lib_managed\\scala_2.7.7\\proguard-4.4.jar=src_managed\\sbt-proguard-plugin-0.0.5\\ProguardProject.scala
-C\:\\Users\\Steve\\IdeaProjects\\ParserCombinators\\MuellerScript\\project\\boot\\scala-2.7.7\\org.scala-tools.sbt\\sbt\\0.7.5\\ivy_2.7.7-0.7.5.jar=src_managed\\sbt-proguard-plugin-0.0.5\\ProguardProject.scala
-C\:\\Users\\Steve\\IdeaProjects\\ParserCombinators\\MuellerScript\\project\\boot\\scala-2.7.7\\org.scala-tools.sbt\\sbt\\0.7.5\\sbt_2.7.7-0.7.5.jar=src_managed\\sbt-proguard-plugin-0.0.5\\ProguardProject.scala;src_managed\\assembly-sbt-0.1.1\\assembly\\AssemblyBuilder.scala
-C\:\\Users\\Steve\\IdeaProjects\\ParserCombinators\\MuellerScript\\project\\boot\\scala-2.7.7\\lib\\scala-library.jar=src_managed\\sbt-proguard-plugin-0.0.5\\ProguardProject.scala;src_managed\\assembly-sbt-0.1.1\\assembly\\AssemblyBuilder.scala
-C\:\\Progra~2\\Java\\jre6\\lib\\rt.jar=src_managed\\sbt-proguard-plugin-0.0.5\\ProguardProject.scala;src_managed\\assembly-sbt-0.1.1\\assembly\\AssemblyBuilder.scala

@@ -1,7 +1,0 @@
-#Tests
-#Mon May 23 06:25:40 MDT 2011
-src\\test\\scala\\msl\\dsl\\ServiceSpec.scala=msl.dsl.ServiceSpec<<org.scalatest.Suite
-src\\test\\scala\\msl\\dsl\\EntitySpec.scala=msl.dsl.EntitySpec<<org.scalatest.Suite
-src\\test\\scala\\msl\\dsl\\MethodSpec.scala=msl.dsl.MethodSpec<<org.scalatest.Suite
-src\\test\\scala\\msl\\dsl\\EnumSpec.scala=msl.dsl.EnumSpec<<org.scalatest.Suite
-src\\test\\scala\\msl\\dsl\\InjectSpec.scala=msl.dsl.InjectSpec<<org.scalatest.Suite
