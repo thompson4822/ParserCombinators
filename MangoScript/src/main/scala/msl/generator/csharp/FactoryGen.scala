@@ -41,16 +41,16 @@ class FactoryGen(factory: Factory) extends Generator with CommonNet{
 
   override def toString = generationNotice +
     """
-using Mueller.Han.Business.Interfaces;
-using Mueller.Han.Dao;
-using Mueller.Han.Dto;
+using Mango.Business.Interfaces;
+using Mango.Dao;
+using Mango.Dto;
 using Spring.Transaction.Interceptor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Mueller.Han.Utility;
-using Mueller.Han.Utility.Enumerations;
-using Mueller.Han.Dao.Domain;
+using Mango.Utility;
+using Mango.Utility.Enumerations;
+using Mango.Dao.Domain;
 using AutoPoco;
 using AutoPoco.Engine;
 

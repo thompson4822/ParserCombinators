@@ -37,11 +37,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Mueller.Han.Dao.Domain;
-using Mueller.Han.Utility;
-using Mueller.Han.Utility.Enumerations;
+using Mango.Dao.Domain;
+using Mango.Utility;
+using Mango.Utility.Enumerations;
 
-namespace Mueller.Han.Dao.NHibernate
+namespace Mango.Dao.NHibernate
 {
     /// <summary>
     ///

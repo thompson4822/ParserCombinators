@@ -59,16 +59,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Mueller.Han.Dto;
-using Mueller.Han.Business;
+using Mango.Dto;
+using Mango.Business;
 using FluorineFx;
-using Mueller.Han.Business.Interfaces;
+using Mango.Business.Interfaces;
 using """ + namespace + """.Interfaces;
 using log4net;
 using log4net.Config;
-using Mueller.Han.Service.Common;
-using Mueller.Han.Utility;
-using Mueller.Han.Utility.Enumerations;
+using Mango.Service.Common;
+using Mango.Utility;
+using Mango.Utility.Enumerations;
 
 namespace """ + namespace + """
 {

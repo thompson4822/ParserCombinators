@@ -46,12 +46,12 @@ class CommandGen(serviceName: String, method: Method, flexPackage: FlexPackage) 
     """
 package """ + namespace + """
 {
-	import com.mueller.mihan.navigation.events.ShowDialogEvent;
-	import com.mueller.mihan.navigation.events.ShowMessageEvent;
-	import com.mueller.mihan.service.BaseCommand;
+	import com.mango.navigation.events.ShowDialogEvent;
+	import com.mango.navigation.events.ShowMessageEvent;
+	import com.mango.service.BaseCommand;
 	import """ + eventPackagePartial + """Request;
 	import """ + eventPackagePartial + """Response;
-	import com.mueller.mihan.utilities.LogUtils;
+	import com.mango.utilities.LogUtils;
 """ + dtoImports(Definition("", method.returnType) :: method.parameters) + """
 
 	import flash.net.registerClassAlias;

@@ -30,10 +30,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Mueller.Han.Dto;
-using Mueller.Han.Utility;
-using Mueller.Han.Utility.Enumerations;
-using Mueller.Han.Dao.Domain;
+using Mango.Dto;
+using Mango.Utility;
+using Mango.Utility.Enumerations;
+using Mango.Dao.Domain;
 
 namespace """ + namespace + """
 {

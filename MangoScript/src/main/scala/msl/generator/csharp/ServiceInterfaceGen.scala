@@ -29,9 +29,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Mueller.Han.Utility;
-using Mueller.Han.Utility.Enumerations;
-using Mueller.Han.Dto;
+using Mango.Utility;
+using Mango.Utility.Enumerations;
+using Mango.Dto;
 namespace """ + namespace + """
 {
 """ + interfaceDocumentation(service.name, docs = service.documentation) + """

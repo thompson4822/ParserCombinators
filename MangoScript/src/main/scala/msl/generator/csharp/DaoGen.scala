@@ -31,11 +31,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Mueller.Han.Dao.Domain;
+using Mango.Dao.Domain;
 using NHibernate;
 using NHibernate.Criterion;
-using Mueller.Han.Utility;
-using Mueller.Han.Utility.Enumerations;
+using Mango.Utility;
+using Mango.Utility.Enumerations;
 
 namespace """ + namespace + """
 {

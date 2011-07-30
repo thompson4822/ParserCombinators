@@ -44,20 +44,20 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Mueller.Han.Dao;
+using Mango.Dao;
 using Moq;
-using Mueller.Han.Dto;
-using Mueller.Han.Dao.Domain;
+using Mango.Dto;
+using Mango.Dao.Domain;
 using NHibernate.Criterion;
 using System.Linq.Expressions;
-using Mueller.Han.Business.Interfaces;
-using Mueller.Han.Business.Test.Interfaces;
-using Mueller.Han.Utility;
-using Mueller.Han.Utility.Enumerations;
+using Mango.Business.Interfaces;
+using Mango.Business.Test.Interfaces;
+using Mango.Utility;
+using Mango.Utility.Enumerations;
 using AutoPoco.Engine;
 using AutoPoco;
 
-namespace Mueller.Han.Business.Test
+namespace Mango.Business.Test
 {
     [TestClass]
     public partial class """ + factory.name + """Tests : I""" + factory.name + """Tests

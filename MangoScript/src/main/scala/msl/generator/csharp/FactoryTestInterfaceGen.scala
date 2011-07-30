@@ -30,8 +30,8 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using Mueller.Han.Utility;
-using Mueller.Han.Utility.Enumerations;
+using Mango.Utility;
+using Mango.Utility.Enumerations;
 
 namespace """ + namespace + """
 {

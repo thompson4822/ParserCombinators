@@ -48,7 +48,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Mueller.Han.Dto;
+using Mango.Dto;
 using AutoPoco.Engine;
 using AutoPoco;
 using AutoPoco.DataSources;

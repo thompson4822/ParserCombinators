@@ -32,8 +32,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Mueller.Han.Utility;
-using Mueller.Han.Utility.Enumerations;
+using Mango.Utility;
+using Mango.Utility.Enumerations;
 
 namespace """ + namespace + """
 {

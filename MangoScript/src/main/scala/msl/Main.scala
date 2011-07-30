@@ -31,7 +31,7 @@ object Main {
 
   private def showUsage() = {
     println("""
-Mueller Script Language (2011 by Steve Thompson)
+Mango Script Language (2011 by Steve Thompson)
 usage:
 
 java -jar <JARFILE NAME> <SCRIPT NAME>

@@ -1,17 +1,17 @@
 Parser Remains (Do These Things Next)
-- Generate Enumerations
-- Generate Flags
+- Generate Enumerations (DONE)
+- Generate Flags (DONE)
 
 Wiring Support
-- Add support for updating business.xml
-- Add support for updating dao.xml
-- Add support for updating service.xml (in all service areas)
+- Add support for updating business.xml (DONE)
+- Add support for updating dao.xml (DONE)
+- Add support for updating service.xml (in all service areas) (DONE)
 - Add support for updating flex configuration xml
     - Might have to add more properties?
-- Make sure all of the above is accepted by both Flex and Visual Studio
+- Make sure all of the above is accepted by both Flex and Visual Studio (DONE for VS)
 
 Data Oracle
-- Add generated dummy data using AutoPoco
+- Add generated dummy data using AutoPoco (DONE)
 
 Application Gen
 - Create page (mxml) per service call
